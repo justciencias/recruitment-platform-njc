@@ -39,8 +39,9 @@ const CandidateController = {
 
             // Bulk insert logic (simplified for example)
             for (const row of data) {
+                // Dentro do loop 'for (const row of data)'
                 await db.query(
-                    'INSERT INTO candidates (full_name, email, phone) VALUES ($1, $2, $3)',
+                    `INSERT INTO candidates (full_name, email, phone) VALUES ($1, $2, $3) ON CONFLICT (email) DO UPDATE SET phone = EXCLUDED.phone`,
                     [row.Name, row.Email, row.Phone]
                 );
             }
@@ -48,6 +49,30 @@ const CandidateController = {
             res.json({ message: `${data.length} candidates imported successfully` });
         } catch (error) {
             res.status(500).json({ error: 'Error processing Excel file' });
+        }
+    },
+
+    // Update candidate details (Level 3 - Admin)
+    async update(req, res) {
+        const { id } = req.params;
+        const { full_name, email, phone, current_stage } = req.body;
+        try {
+            const query = `
+                UPDATE candidates 
+                SET full_name = $1, email = $2, phone = $3, current_stage = $4 
+                WHERE id = $5 RETURNING *`;
+            const values = [full_name, email, phone, current_stage, id];
+
+            const result = await db.query(query, values);
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Candidate not found' });
+            }
+
+            res.json(result.rows[0]);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error updating candidate' });
         }
     }
 };

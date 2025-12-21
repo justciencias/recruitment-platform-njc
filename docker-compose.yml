@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:15
+    container_name: njc_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: njc_recruitment
+    ports:
+      - "5432:5432"
+
+  api:
+    build: .
+    container_name: njc_api
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://admin:password123@db:5432/njc_recruitment
+      JWT_SECRET: supersecretkey
+    depends_on:
+      - db

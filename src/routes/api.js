@@ -14,4 +14,30 @@ const EmailController = require('../controllers/EmailController');
 // Level 2 (Evaluator) or Level 3 (Admin) can send emails
 router.post('/emails/send-bulk', authorize(2), EmailController.sendBulk);
 
+// routes/api.js
+const EvaluationController = require('../controllers/EvaluationController');
+
+/**
+ * Level 2: Evaluator (Can read data and submit evaluations)
+ * Level 3: Admin (Can edit candidate personal details)
+ */
+
+// Submit feedback (Members/Evaluators)
+router.post('/evaluations', authorize(2), EvaluationController.create);
+
+// Get history (All Members)
+router.get('/candidates/:candidate_id/history', authorize(2), EvaluationController.getCandidateHistory);
+
+// Edit candidate personal info (Admin only)
+router.put('/candidates/:id', authorize(3), CandidateController.update);
+
+const UserController = require('../controllers/UserController');
+
+// Public route for login
+router.post('/login', UserController.login);
+
+// Protected routes (Ambiente Membros)
+router.get('/users', authorize(1), UserController.index);
+router.post('/users/register', authorize(3), UserController.register);
+
 module.exports = router;
