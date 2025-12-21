@@ -1,0 +1,17 @@
+const express = require('express');
+const router = express.Router();
+const authorize = require('../middlewares/auth');
+const CandidateController = require('../controllers/CandidateController');
+
+// Only members can view candidates
+router.get('/candidates', authorize(1), CandidateController.index);
+
+// Only admins (Level 3) can import data via Excel
+router.post('/candidates/import', authorize(3), CandidateController.importExcel);
+
+const EmailController = require('../controllers/EmailController');
+
+// Level 2 (Evaluator) or Level 3 (Admin) can send emails
+router.post('/emails/send-bulk', authorize(2), EmailController.sendBulk);
+
+module.exports = router;
