@@ -12,7 +12,7 @@ router.post('/candidates/import', authorize(3), CandidateController.importExcel)
 const EmailController = require('../controllers/EmailController');
 
 // Level 2 (Evaluator) or Level 3 (Admin) can send emails
-router.post('/emails/send-bulk', authorize(2), EmailController.sendBulk);
+router.post('/emails/sendBulk', authorize(2), EmailController.sendBulk);
 
 // routes/api.js
 const EvaluationController = require('../controllers/EvaluationController');
@@ -29,7 +29,8 @@ router.post('/evaluations', authorize(2), EvaluationController.create);
 router.get('/candidates/:candidate_id/history', authorize(2), EvaluationController.getCandidateHistory);
 
 // Edit candidate personal info (Admin only)
-router.put('/candidates/:id', authorize(3), CandidateController.update);
+
+router.get('/stats', authorize(1), CandidateController.getStats);
 
 const UserController = require('../controllers/UserController');
 
@@ -39,5 +40,9 @@ router.post('/login', UserController.login);
 // Protected routes (Ambiente Membros)
 router.get('/users', authorize(1), UserController.index);
 router.post('/users/register', authorize(3), UserController.register);
+
+router.post('/candidates/:id/lock', authorize(1), CandidateController.lock); // Line 33?
+router.get('/candidates/:id', authorize(1), CandidateController.show);
+router.put('/candidates/:id', authorize(3), CandidateController.update);
 
 module.exports = router;

@@ -2,55 +2,39 @@ const db = require('../config/db');
 const EmailService = require('../services/EmailService');
 
 const EmailController = {
-    // POST /api/emails/send-bulk
     async sendBulk(req, res) {
-        const { candidate_ids, template_id } = req.body;
+        const { stage, subject, message } = req.body;
 
         try {
-            // 1. Fetch the template
-            const templateResult = await db.query(
-                'SELECT * FROM email_templates WHERE id = $1', 
-                [template_id]
+            // Fetch all candidates in that stage including evaluation_notes [cite: 2025-12-23]
+            const result = await db.query(
+                'SELECT full_name, email, evaluation_notes FROM candidates WHERE current_stage = $1',
+                [stage]
             );
-            const template = templateResult.rows[0];
+            const candidates = result.rows;
 
-            if (!template) return res.status(404).json({ error: 'Template not found' });
-
-            // 2. Fetch all selected candidates
-            const candidatesResult = await db.query(
-                'SELECT id, full_name, email, current_stage FROM candidates WHERE id = ANY($1)',
-                [candidate_ids]
-            );
-            const candidates = candidatesResult.rows;
-
-            // 3. Process the sending queue
             const results = { sent: 0, failed: 0 };
 
             for (const candidate of candidates) {
-                const personalizedBody = EmailService.parseTemplate(template.body_html, candidate);
-                
+                // Replace placeholders with real candidate data [cite: 2025-12-23]
+                let personalizedBody = message
+                    .replace(/{{full_name}}/g, candidate.full_name)
+                    .replace(/{{feedback}}/g, candidate.evaluation_notes || "No feedback provided.");
+
                 const emailSent = await EmailService.sendEmail(
                     candidate.email,
-                    template.subject,
+                    subject,
                     personalizedBody
                 );
 
-                if (emailSent.success) {
-                    results.sent++;
-                } else {
-                    results.failed++;
-                }
+                if (emailSent.success) results.sent++;
+                else results.failed++;
             }
 
-            res.json({
-                message: 'Bulk sending process completed',
-                summary: results
-            });
-
+            res.json({ message: 'Completed', summary: results });
         } catch (error) {
-            res.status(500).json({ error: 'Internal server error during email dispatch' });
+            console.error(error);
+            res.status(500).json({ error: 'Failed dispatch' });
         }
     }
 };
-
-module.exports = EmailController;

@@ -2,6 +2,8 @@ services:
   db:
     image: postgres:15
     container_name: njc_db
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password123
@@ -13,9 +15,27 @@ services:
     build: .
     container_name: njc_api
     ports:
-      - "5000:5000"
+      - "5000:5000"  
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
     environment:
-      DATABASE_URL: postgresql://admin:password123@db:5432/njc_recruitment
-      JWT_SECRET: supersecretkey
+      - DATABASE_URL=postgresql://admin:password123@db:5432/njc_recruitment
+      - JWT_SECRET=supersecretkey
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=587
+      - EMAIL_USER=matilde.afonso@justciencias.pt
+      - EMAIL_PASS=hrlsoimemwgljtga
     depends_on:
       - db
+
+  frontend:
+    build: ./frontend
+    container_name: njc_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+

@@ -35,7 +35,7 @@ const EmailDashboard = () => {
 
     setIsSending(true);
     try {
-      await api.post('/emails/send-bulk', {
+      await api.post('/emails/sendBulk', {
         candidate_ids: selectedCandidates,
         template_id: selectedTemplate
       });

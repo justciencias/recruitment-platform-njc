@@ -1,6 +1,32 @@
-curl -X GET http://localhost:5000/api/candidates \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiYWNjZXNzX2xldmVsIjozLCJpYXQiOjE3NjYzNDAzMjUsImV4cCI6MTc2NjM2OTEyNX0.R2h6vq7LqHxVph_liDyAtM_4TL3XmBYGuOK0fc_gvkQ"
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWNjZXNzX2xldmVsIjozLCJpYXQiOjE3NjY0MDU1MjIsImV4cCI6MTc2NjQzNDMyMn0.dAP63XG5At6BYtPXkX3RPBbUvZsYezf3_N-1Su5v1Ow
+curl -X POST http://localhost:5000/api/login \
+     -H "Content-Type: application/json" \
+     -d '{"email":"matilde.afonso@justciencias.pt","password":"Thisiswhatitfeelslike1312"}'
+
+
+curl -X POST http://localhost:5000/api/emails/sendBulk \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiYWNjZXNzX2xldmVsIjozLCJpYXQiOjE3NjY0MDE0MTgsImV4cCI6MTc2NjQzMDIxOH0.ymUE0tDcewMpqPdmelKXx5JmR-0wQfZZTPwA8kKofh0" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "template_id": 1,
+       "candidate_ids": [$IDS]
+     }'
 
 curl -X POST http://localhost:5000/api/candidates/import \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiYWNjZXNzX2xldmVsIjozLCJpYXQiOjE3NjYzNDAzMjUsImV4cCI6MTc2NjM2OTEyNX0.R2h6vq7LqHxVph_liDyAtM_4TL3XmBYGuOK0fc_gvkQ" \
-     -F "excelFile=@src/fake_users_300.xlsx"
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWNjZXNzX2xldmVsIjozLCJpYXQiOjE3NjY0MDU1MjIsImV4cCI6MTc2NjQzNDMyMn0.dAP63XG5At6BYtPXkX3RPBbUvZsYezf3_N-1Su5v1Ow" \
+     -F "excelFile=@src/test.xlsx"
+     
+     
+hrlsoimemwgljtga
+
+sudo docker exec -i njc_db psql -U admin -d njc_recruitment < src/config/db.sql
+
+sudo docker exec -it njc_db psql -U admin -d njc_recruitment -c "INSERT INTO users (full_name, email, password_hash, access_level) VALUES ('Matilde Afonso', 'matilde.afonso@justciencias.pt', '\$2b\$10\$gv7uCdvcIxWuB4yxX3BOFeCbYxNZbKpu8TbQcrQSk2P/5hM.DZxx.', 3);"
+
+
+const bcrypt = require("bcrypt");
+
+const password = "Thisiswhatitfeelslike1312"; 
+bcrypt.hash(password, 10).then(hash => {
+  console.log(hash);
+});
