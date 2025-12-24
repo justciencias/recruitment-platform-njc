@@ -7,6 +7,7 @@ import CandidateDetails from './pages/CandidateDetails';
 import Layout from './components/Layout';
 import Recruitment from './pages/Recruitment';
 import Communication from './pages/Communication';
+import Members from './pages/Members';
 
 
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/candidates/:id" element={<CandidateDetails />} />
           <Route path="/recruitment" element={<Recruitment />} />
           <Route path="/communication" element={<Communication />} />
+          <Route path="/members" element={<Members />} />
 
           
           <Route path="/recruitment" element={<div className="text-white text-2xl">Recruitment Page (Coming Soon)</div>} />

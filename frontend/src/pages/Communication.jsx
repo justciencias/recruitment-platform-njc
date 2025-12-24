@@ -4,7 +4,7 @@ import { Mail, Send, Users, Info } from 'lucide-react';
 import Toast from '../components/Toast';
 
 const STAGES = [
-  'Phase 1 (Forms)', 'Phase 2 (Dynamics)', 'Phase 3 (Interviews)', 
+  'Phase 1 (Forms)', 'Phase 2 (Dynamics)', 'Phase 3 (Interviews)',
   'Phase 4 (Motivational)', 'Waiting List', 'Approved', 'Rejected'
 ];
 
@@ -19,20 +19,20 @@ export default function Communication() {
   // Fetch Template from DB 
   useEffect(() => {
     const fetchTemplate = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:5000/api/emails/template`, {
-                params: { stage: selectedStage },
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
-            setSubject(res.data.subject);
-            setContent(res.data.body); 
-        } catch (err) {
-            console.error("Template fetch failed:", err.response?.status);
-            setSubject('');
-            setContent('');
-        }
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`http://localhost:5000/api/emails/template`, {
+          params: { stage: selectedStage },
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        setSubject(res.data.subject);
+        setContent(res.data.body);
+      } catch (err) {
+        console.error("Template fetch failed:", err.response?.status);
+        setSubject('');
+        setContent('');
+      }
     };
     if (selectedStage) fetchTemplate();
   }, [selectedStage]);
@@ -47,8 +47,8 @@ export default function Communication() {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCount(res.data.length);
-      } catch (err) { 
-          console.error("Error fetching counts"); 
+      } catch (err) {
+        console.error("Error fetching counts");
       }
     };
     if (selectedStage) fetchCount();
@@ -65,7 +65,7 @@ export default function Communication() {
       await axios.post('http://localhost:5000/api/emails/sendBulk', {
         stage: selectedStage,
         subject,
-        message: content 
+        message: content
       }, { headers: { Authorization: `Bearer ${token}` } });
 
       setNotification({ message: `Sent emails to ${count} candidates!`, type: 'success' });
@@ -77,10 +77,10 @@ export default function Communication() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {notification && (
-        <Toast 
-          message={notification.message} 
-          type={notification.type} 
-          onClose={() => setNotification(null)} 
+        <Toast
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
         />
       )}
 
@@ -98,7 +98,7 @@ export default function Communication() {
             </h3>
             <div className="space-y-2">
               <label className="text-xs text-slate-500 uppercase font-bold tracking-widest">Select Stage</label>
-              <select 
+              <select
                 value={selectedStage}
                 onChange={(e) => setSelectedStage(e.target.value)}
                 className="w-full bg-[#0F172A] border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none"
@@ -111,25 +111,37 @@ export default function Communication() {
                 This will be sent to <span className="text-white font-bold">{count}</span> candidates currently in {selectedStage}.
               </p>
             </div>
+            {/* Individual Sending Warning - Now under Target Audience */}
+            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
+              <div className="text-amber-500 mt-0.5">
+                <Info size={16} />
+              </div>
+              <div className="space-y-1">
+                <p className="text-amber-500 font-bold text-xs uppercase tracking-tight">Privacy Note</p>
+                <p className="text-amber-500/80 text-[11px] leading-relaxed">
+                  Emails are sent **individually**. Candidates won't see other recipients or the total count.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Email Editor */}
         <div className="lg:col-span-2 bg-[#1E293B] p-8 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Email Subject"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             className="w-full bg-[#0F172A] border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none"
           />
-          <textarea 
+          <textarea
             placeholder="Write your message here..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="w-full h-80 bg-[#0F172A] border border-slate-700 rounded-xl p-4 text-slate-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
           />
-          <button 
+          <button
             onClick={handleSendEmails}
             disabled={loading || count === 0}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-all disabled:opacity-30"

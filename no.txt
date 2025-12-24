@@ -19,10 +19,17 @@ curl -X POST http://localhost:5000/api/candidates/import \
      
 hrlsoimemwgljtga
 
-sudo docker exec -i njc_db psql -U admin -d njc_recruitment < src/config/db.sql
+sudo docker exec -i njc_db psql -U admin -d njc_recruitment < backend/src/config/db.sql
 
-sudo docker exec -it njc_db psql -U admin -d njc_recruitment -c "INSERT INTO users (full_name, email, password_hash, access_level) VALUES ('Matilde Afonso', 'matilde.afonso@justciencias.pt', '\$2b\$10\$gv7uCdvcIxWuB4yxX3BOFeCbYxNZbKpu8TbQcrQSk2P/5hM.DZxx.', 3);"
+sudo docker exec -it njc_db psql -U admin -d njc_recruitment -c "ALTER TABLE candidates 
+RENAME COLUMN degree_type TO degree_level;
 
+ALTER TABLE candidates 
+DROP CONSTRAINT IF EXISTS candidates_degree_level_check;
+
+ALTER TABLE candidates 
+ADD CONSTRAINT candidates_degree_level_check 
+CHECK (degree_level IN ('BSc', 'Masters'));"
 
 const bcrypt = require("bcrypt");
 
@@ -30,3 +37,6 @@ const password = "Thisiswhatitfeelslike1312";
 bcrypt.hash(password, 10).then(hash => {
   console.log(hash);
 });
+
+
+sudo docker exec -it njc_db psql -U admin -d njc_recruitment -c "UPDATE users SET department = 'Projects' WHERE email = 'matilde.afonso@justciencias.pt';"

@@ -33,7 +33,7 @@ const UserController = {
                 message: "Login efetuado!"
             });
         } catch (error) {
-            console.error("ERRO NO LOGIN:", error); 
+            console.error("ERRO NO LOGIN:", error);
             res.status(500).json({ error: 'Login server error', details: error.message });
         }
     },
@@ -41,48 +41,38 @@ const UserController = {
     // List all members and their activity
     async index(req, res) {
         try {
-            const query = `
-                SELECT 
-                    u.id, u.full_name, u.email, u.department, u.role, u.access_level,
-                    COUNT(e.id) as interviews_conducted
-                FROM users u
-                LEFT JOIN evaluations e ON u.id = e.member_id
-                GROUP BY u.id
-                ORDER BY u.full_name ASC;
-            `;
-            const result = await db.query(query);
+            console.log("Attempting to fetch users...");
+            const result = await db.query('SELECT * FROM users');
+            console.log("Users found:", result.rows.length);
             res.json(result.rows);
         } catch (error) {
-            res.status(500).json({ error: 'Error fetching members' });
+            console.error("SQL FETCH ERROR:", error.message);
+            res.status(500).json({ error: error.message });
         }
     },
-
-    
-    // Register a new member (Admin only)
     async register(req, res) {
-        const { full_name, email, password, department, role, access_level } = req.body;
+        const { full_name, email, password, department, role_id } = req.body;
 
         try {
             const salt = await bcrypt.genSalt(10);
-            const password_hash = await bcrypt.hash(password, salt);
+            const hashedPassword = await bcrypt.hash(password, salt);
 
-            const query = `
-                INSERT INTO users (full_name, email, password_hash, department, role, access_level)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id, full_name, email;
-            `;
-            const result = await db.query(query, [
-                full_name, email, password_hash, department, role, access_level
-            ]);
+            await db.query(
+                'INSERT INTO users (full_name, email, password_hash, department, access_level) VALUES ($1, $2, $3, $4, $5)',
+                [full_name, email, hashedPassword, department, role_id]
+            );
 
-            res.status(201).json(result.rows[0]);
+            res.status(201).json({ message: 'Member registered successfully!' });
         } catch (error) {
-            res.status(500).json({ error: 'Error creating user' });
+            console.error("REGISTRATION ERROR:", error.message);
+            res.status(500).json({ error: 'Failed to register member' });
         }
     },
 
+
     async getMemberInterviews(req, res) {
-        const query = `
+        try {
+            const query = `
             SELECT 
                 u.full_name as member_name, 
                 u.department,
@@ -93,16 +83,35 @@ const UserController = {
             LEFT JOIN candidates c ON e.candidate_id = c.id
             GROUP BY u.id;
         `;
-        const result = await db.query(query);
-        res.json({
-            token,
-            user: {
-                name: user.full_name,
-                access_level: user.access_level
-            }
-        });
-    }
+            const result = await db.query(query);
+            res.json(result.rows);
+        } catch (error) {
+            console.error("SQL ERROR:", error.message);
+            res.status(500).json({ error: "Database error" });
+        }
+    },
 
+    async delete(req, res) {
+        const { id } = req.params;
+
+        try {
+            // Prevent deleting the last admin or own user 
+            if (req.user.id === parseInt(id)) {
+                return res.status(400).json({ error: "You cannot delete your own account." });
+            }
+
+            const result = await db.query('DELETE FROM users WHERE id = $1 RETURNING id', [id]);
+
+            if (result.rowCount === 0) {
+                return res.status(404).json({ error: "User not found." });
+            }
+
+            res.json({ message: "Member deleted successfully." });
+        } catch (error) {
+            console.error("DELETE ERROR:", error.message);
+            res.status(500).json({ error: "Database error during deletion." });
+        }
+    }
 };
 
 module.exports = UserController;

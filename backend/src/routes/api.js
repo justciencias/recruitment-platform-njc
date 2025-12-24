@@ -39,6 +39,7 @@ router.post('/login', UserController.login);
 
 router.get('/users', authorize(1), UserController.index);
 router.post('/users/register', authorize(3), UserController.register);
+router.delete('/users/:id', authorize(3), UserController.delete);
 
 router.post('/candidates/:id/lock', authorize(1), CandidateController.lock); 
 router.get('/candidates/:id', authorize(1), CandidateController.show);

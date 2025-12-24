@@ -6,7 +6,11 @@ const fileUpload = require('express-fileupload');
 const app = express();
 
 // Middlewares
-app.use(cors()); // Allows Frontend to talk to the Backend
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));// Allows Frontend to talk to the Backend
 app.use(express.json()); // Allows the API to read JSON data in requests
 app.use(fileUpload());
 

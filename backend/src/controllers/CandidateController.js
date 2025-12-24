@@ -3,31 +3,17 @@ const xlsx = require('xlsx');
 
 const CandidateController = {
     // List candidates with sorting and degree filtering
+    // backend/src/controllers/CandidateController.js
+    // backend/src/controllers/CandidateController.js
     async index(req, res) {
-        const { stage, degree, sort = 'full_name', order = 'ASC' } = req.query;
         try {
-            let query = 'SELECT id, full_name, email, phone, current_stage, degree_type FROM candidates WHERE 1=1';
-            const values = [];
-
-            if (stage) {
-                values.push(stage);
-                query += ` AND current_stage = $${values.length}`;
-            }
-
-            if (degree && degree !== 'All') {
-                values.push(degree);
-                query += ` AND degree_type = $${values.length}`;
-            }
-
-            // Allow dynamic sorting by Name, Degree, or Phase 
-            const allowedSorts = ['full_name', 'degree_type', 'current_stage'];
-            const safeSort = allowedSorts.includes(sort) ? sort : 'full_name';
-            query += ` ORDER BY ${safeSort} ${order === 'DESC' ? 'DESC' : 'ASC'}`;
-
-            const result = await db.query(query, values);
+            const result = await db.query(
+                'SELECT id, full_name, email, phone, degree_type, current_stage, cv_url FROM candidates ORDER BY created_at DESC'
+            );
             res.json(result.rows);
         } catch (error) {
-            res.status(500).json({ error: 'Database fetch error' });
+            console.error("CANDIDATES FETCH ERROR:", error.message);
+            res.status(500).json({ error: 'Database error fetching candidates' });
         }
     },
 
