@@ -13,6 +13,9 @@ router.get('/candidates', authorize(1), CandidateController.index);
 // Only admins (Level 3) can import data via Excel
 router.post('/candidates/import', authorize(3), CandidateController.importExcel);
 
+// Fetch email template by stage
+router.get('/emails/template', authorize(1), EmailController.getTemplateByStage);
+
 // Level 2 (Evaluator) or Level 3 (Admin) can send emails
 router.post('/emails/sendBulk', authorize(2), EmailController.sendBulk);
 
@@ -41,5 +44,6 @@ router.post('/users/register', authorize(3), UserController.register);
 router.post('/candidates/:id/lock', authorize(1), CandidateController.lock); 
 router.get('/candidates/:id', authorize(1), CandidateController.show);
 router.put('/candidates/:id', authorize(3), CandidateController.update);
+
 
 module.exports = router;
