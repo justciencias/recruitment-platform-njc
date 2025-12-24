@@ -38,3 +38,5 @@ const EmailController = {
         }
     }
 };
+
+module.exports = EmailController;
