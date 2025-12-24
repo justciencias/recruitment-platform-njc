@@ -16,12 +16,11 @@ export default function Communication() {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
 
-  // Fetch Template from DB [cite: 2025-12-24]
+  // Fetch Template from DB 
   useEffect(() => {
     const fetchTemplate = async () => {
         try {
             const token = localStorage.getItem('token');
-            // FIX: Added /api prefix to match your backend logs
             const res = await axios.get(`http://localhost:5000/api/emails/template`, {
                 params: { stage: selectedStage },
                 headers: { Authorization: `Bearer ${token}` }
@@ -38,12 +37,11 @@ export default function Communication() {
     if (selectedStage) fetchTemplate();
   }, [selectedStage]);
 
-  // Fetch Candidate Count [cite: 2025-12-24]
+  // Fetch Candidate Count 
   useEffect(() => {
     const fetchCount = async () => {
       try {
         const token = localStorage.getItem('token');
-        // FIX: Added /api prefix
         const res = await axios.get(`http://localhost:5000/api/candidates`, {
           params: { stage: selectedStage },
           headers: { Authorization: `Bearer ${token}` }
@@ -64,7 +62,6 @@ export default function Communication() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      // FIX: Added /api prefix
       await axios.post('http://localhost:5000/api/emails/sendBulk', {
         stage: selectedStage,
         subject,

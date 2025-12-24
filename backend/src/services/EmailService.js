@@ -24,9 +24,7 @@ class EmailService {
             .replace(/{{recruitment_year}}/g, new Date().getFullYear());
     }
 
-    /**
-     * Sends an email to a single candidate
-     */
+    // Sends an email to a single candidate
     async sendEmail(to, subject, html) {
         try {
             await this.transporter.sendMail({

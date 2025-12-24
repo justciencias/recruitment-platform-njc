@@ -21,9 +21,7 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          {/* Redirect base path to dashboard */}
           <Route path="/" element={<Navigate to="/dashboard" />} />
-          
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/candidates" element={<Candidates />} />
           <Route path="/candidates/:id" element={<CandidateDetails />} />
@@ -31,7 +29,6 @@ function App() {
           <Route path="/communication" element={<Communication />} />
 
           
-          {/* Add placeholders for other pages to match your sidebar */}
           <Route path="/recruitment" element={<div className="text-white text-2xl">Recruitment Page (Coming Soon)</div>} />
           <Route path="/communication" element={<div className="text-white text-2xl">Communication Page (Coming Soon)</div>} />
           <Route path="/members" element={<div className="text-white text-2xl">Members Page (Coming Soon)</div>} />

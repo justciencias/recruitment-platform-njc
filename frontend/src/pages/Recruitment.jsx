@@ -24,7 +24,6 @@ export default function Recruitment() {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        // We use the 'stage' query parameter defined in your CandidateController.index
         const response = await axios.get(`http://localhost:5000/api/candidates?stage=${selectedStage}`, {
           headers: { Authorization: `Bearer ${token}` }
         });

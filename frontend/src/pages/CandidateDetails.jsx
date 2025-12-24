@@ -35,12 +35,12 @@ export default function CandidateDetails() {
             setUserLevel(user.access_level || 1);
 
             try {
-                // 1. Attempt to lock the candidate 
+                // Attempt to lock the candidate 
                 await axios.post(`http://localhost:5000/api/candidates/${id}/lock`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                // 2. Fetch details
+                // Fetch details
                 const res = await axios.get(`http://localhost:5000/api/candidates/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });

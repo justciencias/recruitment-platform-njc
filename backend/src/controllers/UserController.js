@@ -10,7 +10,6 @@ const UserController = {
     async login(req, res) {
         console.log("JWT Secret Check:", process.env.JWT_SECRET ? "Exists" : "MISSING");
         const { email, password } = req.body;
-        // ... resto do código
 
         try {
             const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -28,21 +27,18 @@ const UserController = {
                 { expiresIn: '8h' }
             );
 
-            // ... depois de gerar o token
             console.log("Token gerado com sucesso!");
             return res.json({
                 token: token,
                 message: "Login efetuado!"
             });
         } catch (error) {
-            console.error("ERRO NO LOGIN:", error); // Isto vai aparecer no 'docker logs'
+            console.error("ERRO NO LOGIN:", error); 
             res.status(500).json({ error: 'Login server error', details: error.message });
         }
     },
 
-    /**
-     * List all members and their activity (Figure 3)
-     */
+    // List all members and their activity
     async index(req, res) {
         try {
             const query = `
@@ -61,9 +57,8 @@ const UserController = {
         }
     },
 
-    /**
-     * Register a new member (Admin only)
-     */
+    
+    // Register a new member (Admin only)
     async register(req, res) {
         const { full_name, email, password, department, role, access_level } = req.body;
 
@@ -86,7 +81,6 @@ const UserController = {
         }
     },
 
-    // In MemberController.js or similar
     async getMemberInterviews(req, res) {
         const query = `
             SELECT 
@@ -100,7 +94,6 @@ const UserController = {
             GROUP BY u.id;
         `;
         const result = await db.query(query);
-        // Altere para usar o access_level, que é o que define as permissões no seu sistema
         res.json({
             token,
             user: {

@@ -3,7 +3,7 @@ const EmailService = require('../services/EmailService');
 
 const EmailController = {
     async getTemplateByStage(req, res) {
-        const { stage } = req.query; // GET parameters are in req.query [cite: 2025-12-24]
+        const { stage } = req.query; 
 
         try {
             const result = await db.query(
@@ -12,7 +12,6 @@ const EmailController = {
             );
 
             if (result.rows.length === 0) {
-                // This is where your 404 is coming from [cite: 2025-12-24]
                 return res.status(404).json({ error: `No template found for stage: ${stage}` });
             }
 
@@ -27,16 +26,16 @@ const EmailController = {
         const { stage, subject: customSubject, message: customMessage } = req.body;
 
         try {
-            // 1. Get Template from DB [cite: 2025-12-23]
+            // Get Template from DB 
             const templateRes = await db.query(
                 'SELECT subject, body_html FROM email_templates WHERE name = $1',
                 [stage]
             );
 
-            // Use DB template if user didn't provide custom text in the UI [cite: 2025-12-23]
+            // Use DB template if user didn't provide custom text in the UI 
             const template = templateRes.rows[0] || { subject: customSubject, body_html: customMessage };
 
-            // 2. Fetch all candidates in that stage [cite: 2025-12-23]
+            // Fetch all candidates in that stage 
             const result = await db.query(
                 'SELECT full_name, email, evaluation_notes FROM candidates WHERE current_stage = $1',
                 [stage]
@@ -46,7 +45,7 @@ const EmailController = {
             const results = { sent: 0, failed: 0 };
 
             for (const candidate of candidates) {
-                // Replace placeholders [cite: 2025-12-23]
+                // Replace placeholders 
                 let finalBody = template.body_html
                     .replace(/{{full_name}}/g, candidate.full_name)
                     .replace(/{{feedback}}/g, candidate.evaluation_notes || "No specific feedback provided at this stage.");

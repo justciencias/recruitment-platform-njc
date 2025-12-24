@@ -6,12 +6,11 @@ const fileUpload = require('express-fileupload');
 const app = express();
 
 // Middlewares
-app.use(cors()); // Allows your Frontend to talk to the Backend
+app.use(cors()); // Allows Frontend to talk to the Backend
 app.use(express.json()); // Allows the API to read JSON data in requests
 app.use(fileUpload());
 
 // Routes
-// This connects all the logic we wrote for candidates, emails, and evaluations
 app.use('/api', apiRoutes);
 
 // Basic Health Check
@@ -19,8 +18,10 @@ app.get('/', (req, res) => {
     res.send('NJC Recruitment API is running...');
 });
 
-// Port Configuration
-// Docker is expecting port 5000 based on your Dockerfile/Compose
+/**
+Port Configuration
+Docker is expecting port 5000 
+*/
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

@@ -54,7 +54,6 @@ CREATE TABLE IF NOT EXISTS evaluations (
     feedback TEXT,
     rating INTEGER CHECK (rating >= 1 AND rating <= 5),
     
-    -- Stage can be 'Group Dynamics', 'Interview 1', or 'Interview 2' 
     stage_evaluated VARCHAR(100), 
     
     -- Once true, everyone can search and see this final feedback 

@@ -12,7 +12,7 @@ export default function Candidates() {
   const navigate = useNavigate();
   const [notification, setNotification] = useState(null);
 
-  // 1. Fetch live data from the database
+  // Fetch live data from the database
   const fetchCandidates = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -31,12 +31,11 @@ export default function Candidates() {
     fetchCandidates();
   }, []);
 
-  // 2. Functional Excel Import
+  // Functional Excel Import
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // GET THE TOKEN HERE
     const token = localStorage.getItem('token'); 
 
     const formData = new FormData();
@@ -51,7 +50,6 @@ export default function Candidates() {
         });
         setNotification({ message: 'Data imported successfully!', type: 'success' });
         
-        // Clear the input so you can upload the same file again if needed
         e.target.value = null; 
         
         fetchCandidates();

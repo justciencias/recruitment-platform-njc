@@ -13,7 +13,7 @@ const EvaluationController = {
             // Start a transaction to ensure both operations succeed together
             await db.query('BEGIN');
 
-            // 1. Insert the evaluation record
+            // Insert the evaluation record
             const evaluationQuery = `
                 INSERT INTO evaluations (candidate_id, member_id, score, feedback_text, stage_name)
                 VALUES ($1, $2, $3, $4, $5)
@@ -27,7 +27,7 @@ const EvaluationController = {
                 stage_name
             ]);
 
-            // 2. Update candidate's current stage (State Machine logic)
+            // Update candidate's current stage (State Machine logic)
             const updateCandidateQuery = `
                 UPDATE candidates 
                 SET current_stage = $1 
@@ -49,10 +49,8 @@ const EvaluationController = {
         }
     },
 
-    /**
-     * Get the evaluation history for a specific candidate
-     * Used in "Figura 2" of your proposal
-     */
+    
+    // Get the evaluation history for a specific candidate
     async getCandidateHistory(req, res) {
         const { candidate_id } = req.params;
 
