@@ -111,6 +111,37 @@ const UserController = {
             console.error("DELETE ERROR:", error.message);
             res.status(500).json({ error: "Database error during deletion." });
         }
+    },
+
+    async updatePassword(req, res) {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user.id; // From authMiddleware
+
+        try {
+            // Get current hash using the correct column 'password_hash'
+            const userResult = await db.query('SELECT password_hash FROM users WHERE id = $1', [userId]);
+            const user = userResult.rows[0];
+
+            if (!user) return res.status(404).json({ error: "User not found" });
+
+            // Compare with 'password_hash'
+            const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+            if (!isMatch) {
+                return res.status(400).json({ error: "Incorrect current password" });
+            }
+
+            // Hash new password
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+            // Update using 'password_hash'
+            await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashedPassword, userId]);
+
+            res.json({ message: "Password updated successfully" });
+        } catch (error) {
+            console.error("PASSWORD UPDATE ERROR:", error);
+            res.status(500).json({ error: "Server error updating password" });
+        }
     }
 };
 

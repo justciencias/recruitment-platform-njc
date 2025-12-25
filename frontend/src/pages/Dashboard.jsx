@@ -11,6 +11,7 @@ const StatCard = ({ label, value, colorClass = "text-white" }) => (
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState(null);
+  const [activeTrack, setActiveTrack] = useState('Loading...');
 
   useEffect(() => {
     const loadStats = async () => {
@@ -25,6 +26,23 @@ export default function Dashboard() {
       }
     };
     loadStats();
+  }, []);
+
+  useEffect(() => {
+    const fetchActiveTrack = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:5000/api/tracks', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // Find the one marked 'active'
+        const active = res.data.find(t => t.status === 'active');
+        setActiveTrack(active ? active.name : 'No Active Season');
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchActiveTrack();
   }, []);
 
   if (error) return <div className="text-red-400 p-8">{error}</div>;
@@ -42,17 +60,27 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-2">
-      <div className="mb-10">
-        <h1 className="text-4xl font-extrabold text-white tracking-tight">Control Panel</h1>
-        <div className="h-1 w-20 bg-blue-600 mt-2 rounded-full"></div>
+    <div className="space-y-8"> 
+      {/* Header Row */}
+      <div className="flex items-center gap-4">
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+
+        {/* Active Season Badge */}
+        <div className="bg-blue-600/10 border border-blue-500/20 px-4 py-1.5 rounded-full flex items-center gap-2">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          <span className="text-blue-400 text-sm font-bold uppercase tracking-wider">
+            {activeTrack}
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card, idx) => (
           <StatCard key={idx} {...card} />
         ))}
       </div>
+
     </div>
   );
 }

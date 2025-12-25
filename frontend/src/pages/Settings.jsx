@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Settings as SettingsIcon, Database, Mail, Shield, Plus, Trash2, X, Power } from 'lucide-react';
-import Toast from '../components/Toast';
+import { Settings as SettingsIcon, Database, Mail, Shield, Plus, Trash2, X, Power, Lock, Eye, EyeOff } from 'lucide-react'; import Toast from '../components/Toast';
 import ConfirmModal from '../components/ConfirmModal';
 
 export default function Settings() {
@@ -11,6 +10,17 @@ export default function Settings() {
     const [notification, setNotification] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [trackToDelete, setTrackToDelete] = useState(null);
+    const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
+    const [passLoading, setPassLoading] = useState(false);
+    const [showPasswords, setShowPasswords] = useState({
+        current: false,
+        new: false,
+        confirm: false
+    });
+
+    const toggleVisibility = (field) => {
+        setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+    };
 
     const fetchTracks = async () => {
         try {
@@ -76,6 +86,32 @@ export default function Settings() {
             setNotification({ message: 'Error deleting track.', type: 'error' });
         } finally {
             setIsModalOpen(false);
+        }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        if (passwords.new !== passwords.confirm) {
+            return setNotification({ message: "New passwords do not match", type: 'error' });
+        }
+
+        setPassLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            await axios.put('http://localhost:5000/api/user/password',
+                { currentPassword: passwords.current, newPassword: passwords.new },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            setNotification({ message: 'Password changed successfully!', type: 'success' });
+            setPasswords({ current: '', new: '', confirm: '' });
+        } catch (err) {
+            setNotification({
+                message: err.response?.data?.error || 'Failed to update password',
+                type: 'error'
+            });
+        } finally {
+            setPassLoading(false);
         }
     };
 
@@ -180,24 +216,111 @@ export default function Settings() {
                     </div>
                 </div>
 
-                {/* Security and System Info */}
+                {/* Account Security Section */}
                 <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl md:col-span-2">
                     <div className="p-6 border-b border-slate-700">
                         <h3 className="text-white font-bold flex items-center gap-2">
-                            <Shield size={18} className="text-red-500" /> Advanced System Controls
+                            <Lock size={18} className="text-blue-500" /> Account Security
                         </h3>
                     </div>
-                    <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-1">
-                            <p className="text-white font-medium">Database Status</p>
-                            <p className="text-green-500 text-sm flex items-center gap-2">
-                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                Connected to PostgreSQL
-                            </p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-white font-medium">Environment</p>
-                            <p className="text-slate-400 text-sm">Production v1.0.4</p>
+
+                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Password Form */}
+                        <form onSubmit={handleChangePassword} className="space-y-4">
+                            {/* Current Password Field */}
+                            <div>
+                                <label className="text-xs text-slate-500 uppercase font-bold tracking-widest block mb-1">Current Password</label>
+                                <div className="relative">
+                                    <input
+                                        type={showPasswords.current ? "text" : "password"} // Dynamic Type
+                                        required
+                                        className="w-full bg-[#0F172A] border border-slate-700 rounded-lg pl-4 pr-10 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500"
+                                        value={passwords.current}
+                                        onChange={e => setPasswords({ ...passwords, current: e.target.value })}
+                                    />
+                                    <button
+                                        type="button" // Important to prevent form submission
+                                        onClick={() => toggleVisibility('current')}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                                    >
+                                        {showPasswords.current ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* New Password Field */}
+                                <div>
+                                    <label className="text-xs text-slate-500 uppercase font-bold tracking-widest block mb-1">New Password</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showPasswords.new ? "text" : "password"}
+                                            required
+                                            className="w-full bg-[#0F172A] border border-slate-700 rounded-lg pl-4 pr-10 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500"
+                                            value={passwords.new}
+                                            onChange={e => setPasswords({ ...passwords, new: e.target.value })}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleVisibility('new')}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                                        >
+                                            {showPasswords.new ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Confirm Password Field */}
+                                <div>
+                                    <label className="text-xs text-slate-500 uppercase font-bold tracking-widest block mb-1">Confirm</label>
+                                    <div className="relative">
+                                        <input
+                                            type={showPasswords.confirm ? "text" : "password"}
+                                            required
+                                            className="w-full bg-[#0F172A] border border-slate-700 rounded-lg pl-4 pr-10 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500"
+                                            value={passwords.confirm}
+                                            onChange={e => setPasswords({ ...passwords, confirm: e.target.value })}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleVisibility('confirm')}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                                        >
+                                            {showPasswords.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={passLoading}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-all disabled:opacity-50"
+                            >
+                                {passLoading ? 'Updating...' : 'Update Password'}
+                            </button>
+                        </form>
+
+                        {/* Informational Side */}
+                        <div className="bg-[#0F172A] rounded-xl p-6 border border-slate-700/50 flex flex-col justify-center space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-green-500/10 p-2 rounded-full text-green-500">
+                                    <Database size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-white font-medium text-sm">Database Connected</p>
+                                    <p className="text-slate-500 text-xs">PostgreSQL Active</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="bg-purple-500/10 p-2 rounded-full text-purple-500">
+                                    <Shield size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-white font-medium text-sm">System Version</p>
+                                    <p className="text-slate-500 text-xs">Production v1.0.0</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

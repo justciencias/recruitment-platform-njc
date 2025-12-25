@@ -37,6 +37,7 @@ router.get('/stats', authorize(1), CandidateController.getStats);
 
 // Public route for login
 router.post('/login', UserController.login);
+router.put('/user/password', authorize(1), UserController.updatePassword);
 
 router.get('/users', authorize(1), UserController.index);
 router.post('/users/register', authorize(3), UserController.register);
