@@ -30,6 +30,12 @@ const UserController = {
             console.log("Token gerado com sucesso!");
             return res.json({
                 token: token,
+                user: {
+                    id: user.id,
+                    name: user.full_name,
+                    email: user.email,
+                    access_level: user.access_level
+                },
                 message: "Login efetuado!"
             });
         } catch (error) {

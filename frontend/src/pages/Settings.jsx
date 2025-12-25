@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Settings as SettingsIcon, Database, Mail, Shield, Plus, Trash2, X, Power, Lock, Eye, EyeOff } from 'lucide-react'; import Toast from '../components/Toast';
+import { Settings as SettingsIcon, Database, Mail, Shield, Plus, Trash2, X, Power, Lock, Eye, EyeOff } from 'lucide-react'; 
+import Toast from '../components/Toast';
 import ConfirmModal from '../components/ConfirmModal';
 
 export default function Settings() {
@@ -17,6 +18,7 @@ export default function Settings() {
         new: false,
         confirm: false
     });
+    const [userLevel, setUserLevel] = useState(1);
 
     const toggleVisibility = (field) => {
         setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
@@ -115,6 +117,15 @@ export default function Settings() {
         }
     };
 
+    useEffect(() => {
+        const userString = localStorage.getItem('user');
+        if (userString) {
+            const user = JSON.parse(userString);
+            setUserLevel(parseInt(user.access_level));
+        }
+        fetchTracks();
+    }, []);
+
     return (
         <div className="max-w-5xl mx-auto space-y-8 p-6">
             {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
@@ -131,93 +142,99 @@ export default function Settings() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Recruitment Tracks Section */}
-                <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
-                    <div className="p-6 border-b border-slate-700 flex justify-between items-center">
-                        <h3 className="text-white font-bold flex items-center gap-2">
-                            <Database size={18} className="text-blue-500" /> Recruitment Tracks
-                        </h3>
-                        <button onClick={() => setShowAdd(!showAdd)} className="text-blue-500 hover:bg-blue-500/10 p-2 rounded-lg transition-colors">
-                            {showAdd ? <X size={20} /> : <Plus size={20} />}
-                        </button>
-                    </div>
 
-                    <div className="p-6 space-y-4">
-                        {showAdd && (
-                            <form onSubmit={handleAddTrack} className="mb-6 p-4 bg-[#0F172A] rounded-xl border border-blue-500/30 space-y-3">
-                                <input
-                                    type="text"
-                                    placeholder="Track Name (e.g. Spring 2026)"
-                                    value={newTrackName}
-                                    onChange={(e) => setNewTrackName(e.target.value)}
-                                    className="w-full bg-[#1E293B] border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500"
-                                    required
-                                />
-                                <button type="submit" className="w-full bg-blue-600 py-2 rounded-lg text-white font-bold text-sm">
-                                    Create Track
+                {/* --- ADMIN ONLY SECTIONS --- */}
+                {userLevel === 3 && (
+                    <>
+                        {/* Recruitment Tracks Section */}
+                        <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+                            <div className="p-6 border-b border-slate-700 flex justify-between items-center">
+                                <h3 className="text-white font-bold flex items-center gap-2">
+                                    <Database size={18} className="text-blue-500" /> Recruitment Tracks
+                                </h3>
+                                <button onClick={() => setShowAdd(!showAdd)} className="text-blue-500 hover:bg-blue-500/10 p-2 rounded-lg transition-colors">
+                                    {showAdd ? <X size={20} /> : <Plus size={20} />}
                                 </button>
-                            </form>
-                        )}
+                            </div>
 
-                        <div className="space-y-3">
-                            {tracks.map(track => (
-                                <div key={track.id} className={`flex justify-between items-center p-4 bg-[#0F172A] rounded-xl border transition-all ${track.status === 'active' ? 'border-blue-500/50 shadow-lg shadow-blue-500/5' : 'border-slate-800 opacity-60'
-                                    }`}>
-                                    <div>
-                                        <p className="text-white font-medium">{track.name}</p>
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${track.status === 'active' ? 'bg-blue-500/10 text-blue-500' : 'bg-slate-500/10 text-slate-500'
-                                            }`}>
-                                            {track.status}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        {track.status !== 'active' && (
-                                            <button
-                                                onClick={() => handleActivateTrack(track.id)}
-                                                className="p-2 text-slate-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
-                                                title="Set as Active Season"
-                                            >
-                                                <Power size={18} />
-                                            </button>
-                                        )}
-
-                                        <button
-                                            onClick={() => initiateDelete(track.id)}
-                                            className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                                            title="Delete Track"
-                                        >
-                                            <Trash2 size={18} />
+                            <div className="p-6 space-y-4">
+                                {showAdd && (
+                                    <form onSubmit={handleAddTrack} className="mb-6 p-4 bg-[#0F172A] rounded-xl border border-blue-500/30 space-y-3">
+                                        <input
+                                            type="text"
+                                            placeholder="Track Name (e.g. Spring 2026)"
+                                            value={newTrackName}
+                                            onChange={(e) => setNewTrackName(e.target.value)}
+                                            className="w-full bg-[#1E293B] border border-slate-700 rounded-lg px-3 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500"
+                                            required
+                                        />
+                                        <button type="submit" className="w-full bg-blue-600 py-2 rounded-lg text-white font-bold text-sm">
+                                            Create Track
                                         </button>
-                                    </div>
+                                    </form>
+                                )}
+
+                                <div className="space-y-3">
+                                    {tracks.map(track => (
+                                        <div key={track.id} className={`flex justify-between items-center p-4 bg-[#0F172A] rounded-xl border transition-all ${track.status === 'active' ? 'border-blue-500/50 shadow-lg shadow-blue-500/5' : 'border-slate-800 opacity-60'
+                                            }`}>
+                                            <div>
+                                                <p className="text-white font-medium">{track.name}</p>
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${track.status === 'active' ? 'bg-blue-500/10 text-blue-500' : 'bg-slate-500/10 text-slate-500'
+                                                    }`}>
+                                                    {track.status}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                {track.status !== 'active' && (
+                                                    <button
+                                                        onClick={() => handleActivateTrack(track.id)}
+                                                        className="p-2 text-slate-500 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all"
+                                                        title="Set as Active Season"
+                                                    >
+                                                        <Power size={18} />
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    onClick={() => initiateDelete(track.id)}
+                                                    className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                                                    title="Delete Track"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Email Configuration Section */}
-                <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
-                    <div className="p-6 border-b border-slate-700">
-                        <h3 className="text-white font-bold flex items-center gap-2">
-                            <Mail size={18} className="text-amber-500" /> System Email
-                        </h3>
-                    </div>
-                    <div className="p-6 space-y-4">
-                        <div className="space-y-2">
-                            <label className="text-xs text-slate-500 uppercase font-bold tracking-widest">Sender Name</label>
-                            <input type="text" placeholder="NJC Recruitment Team" className="w-full bg-[#0F172A] border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" />
+                        {/* Email Configuration Section */}
+                        <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+                            <div className="p-6 border-b border-slate-700">
+                                <h3 className="text-white font-bold flex items-center gap-2">
+                                    <Mail size={18} className="text-amber-500" /> System Email
+                                </h3>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs text-slate-500 uppercase font-bold tracking-widest">Sender Name</label>
+                                    <input type="text" placeholder="NJC Recruitment Team" className="w-full bg-[#0F172A] border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none" />
+                                </div>
+                                <div className="p-4 bg-amber-500/5 rounded-xl border border-amber-500/10">
+                                    <p className="text-amber-500/80 text-xs leading-relaxed">
+                                        Note: Email templates are managed directly in the <b>Communication</b> tab for specific stages.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="p-4 bg-amber-500/5 rounded-xl border border-amber-500/10">
-                            <p className="text-amber-500/80 text-xs leading-relaxed">
-                                Note: Email templates are managed directly in the <b>Communication</b> tab for specific stages.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                    </>
+                )}
 
-                {/* Account Security Section */}
-                <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl md:col-span-2">
+                {/* --- VISIBLE TO ALL: Account Security Section --- */}
+                <div className={`bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl md:col-span-2`}>
                     <div className="p-6 border-b border-slate-700">
                         <h3 className="text-white font-bold flex items-center gap-2">
                             <Lock size={18} className="text-blue-500" /> Account Security
@@ -225,21 +242,22 @@ export default function Settings() {
                     </div>
 
                     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Password Form */}
+                        {/* Password Form (With the new eye toggles) */}
                         <form onSubmit={handleChangePassword} className="space-y-4">
+                            {/* ... (Your existing Password Form inputs with show/hide logic) ... */}
                             {/* Current Password Field */}
                             <div>
                                 <label className="text-xs text-slate-500 uppercase font-bold tracking-widest block mb-1">Current Password</label>
                                 <div className="relative">
                                     <input
-                                        type={showPasswords.current ? "text" : "password"} // Dynamic Type
+                                        type={showPasswords.current ? "text" : "password"}
                                         required
                                         className="w-full bg-[#0F172A] border border-slate-700 rounded-lg pl-4 pr-10 py-2 text-white outline-none focus:ring-1 focus:ring-blue-500"
                                         value={passwords.current}
                                         onChange={e => setPasswords({ ...passwords, current: e.target.value })}
                                     />
                                     <button
-                                        type="button" // Important to prevent form submission
+                                        type="button"
                                         onClick={() => toggleVisibility('current')}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
                                     >
@@ -318,13 +336,14 @@ export default function Settings() {
                                 </div>
                                 <div>
                                     <p className="text-white font-medium text-sm">System Version</p>
-                                    <p className="text-slate-500 text-xs">Production v1.0.0</p>
+                                    <p className="text-slate-500 text-xs">Production v1.0.4</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <ConfirmModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

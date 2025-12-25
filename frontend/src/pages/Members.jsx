@@ -7,6 +7,8 @@ export default function Members() {
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [notification, setNotification] = useState(null);
+    const [currentUserLevel, setCurrentUserLevel] = useState(1);
+
     const [formData, setFormData] = useState({
         full_name: '',
         email: '',
@@ -29,7 +31,12 @@ export default function Members() {
         }
     };
 
-    useEffect(() => { fetchUsers(); }, []);
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        setCurrentUserLevel(parseInt(storedUser.access_level || 1));
+
+        fetchUsers();
+    }, []);
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -59,7 +66,7 @@ export default function Members() {
             });
 
             setNotification({ message: 'Member removed!', type: 'success' });
-            fetchUsers(); // Refresh the list
+            fetchUsers();
         } catch (err) {
             setNotification({
                 message: err.response?.data?.error || 'Error deleting member',
@@ -74,12 +81,14 @@ export default function Members() {
 
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-white">NJC Team</h1>
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20"
-                >
-                    <UserPlus size={20} /> Add Member
-                </button>
+                {currentUserLevel === 3 && (
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20"
+                    >
+                        <UserPlus size={20} /> Add Member
+                    </button>
+                )}
             </div>
 
             {/* Members Table */}
@@ -106,20 +115,22 @@ export default function Members() {
 
                                 <td className="px-6 py-4 w-1/4">
                                     <span className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold border ${user.access_level === 3 ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                            user.access_level === 2 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                                                'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                        user.access_level === 2 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                            'bg-blue-500/10 text-blue-400 border-blue-500/20'
                                         }`}>
                                         {user.access_level === 3 ? 'Admin' : user.access_level === 2 ? 'Evaluator' : 'Member'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 text-right">
-                                    <button
-                                        onClick={() => handleDelete(user.id)}
-                                        className="text-slate-600 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-500/10"
-                                        title="Delete Member"
-                                    >
-                                        <X size={18} />
-                                    </button>
+                                    {currentUserLevel === 3 && (
+                                        <button
+                                            onClick={() => handleDelete(user.id)}
+                                            className="text-slate-600 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-500/10"
+                                            title="Delete Member"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}
