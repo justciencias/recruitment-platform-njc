@@ -9,7 +9,9 @@ const STAGES = [
   'Phase 2 (Dynamics)',
   'Phase 3 (Interviews)',
   'Phase 4 (Motivational)',
-  'Waiting List'
+  'Waiting List',
+  'Approved',
+  'Rejected'
 ];
 
 export default function Recruitment() {
