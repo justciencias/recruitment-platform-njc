@@ -25,8 +25,8 @@ services:
       - JWT_SECRET=supersecretkey
       - EMAIL_HOST=smtp.gmail.com
       - EMAIL_PORT=587
-      - EMAIL_USER=matilde.afonso@justciencias.pt
-      - EMAIL_PASS=hrlsoimemwgljtga
+      - EMAIL_USER=
+      - EMAIL_PASS=
     depends_on:
       - db
 
