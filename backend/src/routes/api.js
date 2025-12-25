@@ -6,6 +6,7 @@ const CandidateController = require('../controllers/CandidateController');
 const EmailController = require('../controllers/EmailController');
 const EvaluationController = require('../controllers/EvaluationController');
 const UserController = require('../controllers/UserController');
+const TrackController = require('../controllers/TrackController');
 
 // Only members can view candidates
 router.get('/candidates', authorize(1), CandidateController.index);
@@ -45,5 +46,10 @@ router.post('/candidates/:id/lock', authorize(1), CandidateController.lock);
 router.get('/candidates/:id', authorize(1), CandidateController.show);
 router.put('/candidates/:id', authorize(3), CandidateController.update);
 
+// All users can see tracks, but only Admins (3) can create them
+router.get('/tracks', authorize(1), TrackController.index);
+router.post('/tracks', authorize(3), TrackController.store);
+router.put('/tracks/:id/activate', TrackController.activate); // Add this line
+router.delete('/tracks/:id', TrackController.destroy);
 
 module.exports = router;

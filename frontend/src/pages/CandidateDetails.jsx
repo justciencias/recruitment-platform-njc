@@ -15,7 +15,7 @@ const STAGES = [
 export default function CandidateDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    
+
     // States
     const [candidate, setCandidate] = useState(null);
     const [notes, setNotes] = useState('');
@@ -27,6 +27,7 @@ export default function CandidateDetails() {
     const [isLockedByOther, setIsLockedByOther] = useState(false);
     const [lockMessage, setLockMessage] = useState('');
     const [userLevel, setUserLevel] = useState(1);
+    const [tracks, setTracks] = useState([]);
 
     useEffect(() => {
         const loadPageData = async () => {
@@ -34,17 +35,28 @@ export default function CandidateDetails() {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             setUserLevel(user.access_level || 1);
 
+            // Fetch Tracks FIRST and separately to ensure they load regardless of candidate status
             try {
-                // Attempt to lock the candidate 
+                const tracksRes = await axios.get(`http://localhost:5000/api/tracks`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                console.log("Tracks loaded:", tracksRes.data); // Debug log to check console
+                setTracks(tracksRes.data);
+            } catch (err) {
+                console.error("Critical: Could not load tracks", err);
+            }
+
+            // Fetch Candidate Details and handle Locking
+            try {
+                // Attempt lock
                 await axios.post(`http://localhost:5000/api/candidates/${id}/lock`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                // Fetch details
                 const res = await axios.get(`http://localhost:5000/api/candidates/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                
+
                 setCandidate(res.data);
                 setNotes(res.data.evaluation_notes || '');
                 setInterDecision(res.data.intermediate_decision || '');
@@ -55,8 +67,8 @@ export default function CandidateDetails() {
                 if (err.response?.status === 403) {
                     setIsLockedByOther(true);
                     setLockMessage(err.response.data.error);
-                    
-                    // Fetch in read-only mode if locked
+
+                    // Fetch details in read-only mode if locked
                     const res = await axios.get(`http://localhost:5000/api/candidates/${id}`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
@@ -125,6 +137,22 @@ export default function CandidateDetails() {
         }
     };
 
+    const handleTrackChange = async (newTrackId) => {
+        if (!canEdit) return;
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.put(`http://localhost:5000/api/candidates/${id}`, {
+                ...candidate,
+                track_id: newTrackId
+            }, { headers: { Authorization: `Bearer ${token}` } });
+
+            setCandidate(response.data);
+            setNotification({ message: 'Recruitment track updated!', type: 'success' });
+        } catch (err) {
+            setNotification({ message: 'Failed to update track.', type: 'error' });
+        }
+    };
+
     if (!candidate) return <div className="text-white p-10 italic">Loading profile...</div>;
 
     return (
@@ -159,10 +187,9 @@ export default function CandidateDetails() {
                     </div>
                 </div>
                 <div className="text-right">
-                    <span className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest shadow-lg ${
-                        candidate.current_stage === 'Rejected' ? 'bg-red-600' : 
+                    <span className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest shadow-lg ${candidate.current_stage === 'Rejected' ? 'bg-red-600' :
                         candidate.current_stage === 'Waiting List' ? 'bg-amber-500 text-black' : 'bg-blue-600'
-                    }`}>
+                        }`}>
                         {candidate.current_stage}
                     </span>
                 </div>
@@ -180,12 +207,12 @@ export default function CandidateDetails() {
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                         />
-                        
+
                         {/* Decisions Section */}
                         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800">
                             <div>
                                 <label className="text-xs text-slate-500 font-bold uppercase mb-2 block">Intermediate Decision</label>
-                                <textarea 
+                                <textarea
                                     disabled={!canEdit}
                                     value={interDecision}
                                     onChange={(e) => setInterDecision(e.target.value)}
@@ -194,7 +221,7 @@ export default function CandidateDetails() {
                             </div>
                             <div>
                                 <label className="text-xs text-slate-500 font-bold uppercase mb-2 block">Final Decision</label>
-                                <textarea 
+                                <textarea
                                     disabled={!canEdit}
                                     value={finalDecision}
                                     onChange={(e) => setFinalDecision(e.target.value)}
@@ -234,16 +261,16 @@ export default function CandidateDetails() {
                     <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl">
                         <h3 className="text-xl font-bold text-white mb-6">Workflow Action</h3>
                         <div className="space-y-3">
-                            <button 
+                            <button
                                 onClick={() => handleDecision('pass')}
                                 disabled={!canEdit || candidate.current_stage === 'Approved'}
                                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-20"
                             >
                                 <ChevronRight size={18} /> Pass Candidate
                             </button>
-                            
+
                             {candidate.current_stage === 'Phase 3 (Interviews)' && (
-                                <button 
+                                <button
                                     onClick={() => handleDecision('waitlist')}
                                     disabled={!canEdit}
                                     className="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
@@ -252,7 +279,7 @@ export default function CandidateDetails() {
                                 </button>
                             )}
 
-                            <button 
+                            <button
                                 onClick={() => handleDecision('fail')}
                                 disabled={!canEdit || candidate.current_stage === 'Rejected'}
                                 className="w-full flex items-center justify-center gap-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-600/20 font-bold py-3 rounded-xl transition-all disabled:opacity-20"
@@ -273,6 +300,30 @@ export default function CandidateDetails() {
                             <div>
                                 <p className="text-xs text-slate-500 uppercase font-bold tracking-widest">ID Reference</p>
                                 <p className="text-white mt-1">#NJC-{candidate.id.toString().padStart(4, '0')}</p>
+                            </div>
+                            {/* Recruitment Track Dropdown */}
+                            <div className="pt-2">
+                                <p className="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2">Recruitment Track</p>
+                                <select
+                                    disabled={!canEdit}
+                                    value={candidate?.track_id || ''}
+                                    onChange={(e) => handleTrackChange(e.target.value)}
+                                    className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all disabled:opacity-50"
+                                >
+                                    <option value="" disabled>
+                                        {tracks.length === 0 ? "Loading tracks..." : "Select a season"}
+                                    </option>
+                                    {tracks.length > 0 && tracks.map(track => (
+                                        <option key={track.id} value={track.id}>
+                                            {track.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {candidate.track_id && (
+                                    <p className="text-[10px] text-blue-500 mt-2 italic">
+                                        This candidate is currently grouped in the {tracks.find(t => t.id == candidate.track_id)?.name} cohort.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>

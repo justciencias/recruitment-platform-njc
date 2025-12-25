@@ -8,6 +8,7 @@ import Layout from './components/Layout';
 import Recruitment from './pages/Recruitment';
 import Communication from './pages/Communication';
 import Members from './pages/Members';
+import Settings from './pages/Settings';
 
 
 
@@ -29,6 +30,7 @@ function App() {
           <Route path="/recruitment" element={<Recruitment />} />
           <Route path="/communication" element={<Communication />} />
           <Route path="/members" element={<Members />} />
+          <Route path="/settings" element={<Settings />} />
 
           
           <Route path="/recruitment" element={<div className="text-white text-2xl">Recruitment Page (Coming Soon)</div>} />
