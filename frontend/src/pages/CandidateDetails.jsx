@@ -19,7 +19,7 @@ export default function CandidateDetails() {
     // Data States
     const [candidate, setCandidate] = useState(null);
     const [evaluations, setEvaluations] = useState([]);
-    
+
     // New Evaluation Form States
     const [newFeedback, setNewFeedback] = useState('');
     const [newRating, setNewRating] = useState(0);
@@ -28,7 +28,7 @@ export default function CandidateDetails() {
     const [interDecision, setInterDecision] = useState('');
     const [finalDecision, setFinalDecision] = useState('');
     const [adminNotes, setAdminNotes] = useState('');
-    
+
     // UI States
     const [saving, setSaving] = useState(false);
     const [notification, setNotification] = useState(null);
@@ -68,7 +68,6 @@ export default function CandidateDetails() {
 
             // 3. Fetch Candidate Details & Attempt Lock
             try {
-                // Try to acquire lock
                 await axios.post(`http://localhost:5000/api/candidates/${id}/lock`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -83,12 +82,10 @@ export default function CandidateDetails() {
                 setAdminNotes(res.data.private_admin_notes || '');
 
             } catch (err) {
-                // If 403, it is locked by someone else
                 if (err.response?.status === 403) {
                     setIsLockedByOther(true);
                     setLockMessage(err.response.data.error);
 
-                    // Read-only fetch
                     const res = await axios.get(`http://localhost:5000/api/candidates/${id}`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
@@ -102,8 +99,7 @@ export default function CandidateDetails() {
         loadPageData();
     }, [id]);
 
-    // This determines if the Evaluation Feed and Decisions are editable
-    const canEditNotes = !isLockedByOther; 
+    const canEditNotes = !isLockedByOther;
 
     const handlePostEvaluation = async (e) => {
         e.preventDefault();
@@ -111,18 +107,18 @@ export default function CandidateDetails() {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/candidates/${id}/evaluations`, 
-                { 
-                    feedback: newFeedback, 
+            await axios.post(`http://localhost:5000/api/candidates/${id}/evaluations`,
+                {
+                    feedback: newFeedback,
                     rating: newRating || null,
-                    stage_evaluated: candidate.current_stage 
+                    stage_evaluated: candidate.current_stage
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            
+
             setNewFeedback('');
             setNewRating(0);
-            fetchEvaluations(); 
+            fetchEvaluations();
             setNotification({ message: 'Evaluation added!', type: 'success' });
         } catch (err) {
             setNotification({ message: 'Failed to post evaluation.', type: 'error' });
@@ -149,9 +145,7 @@ export default function CandidateDetails() {
     };
 
     const handleDecision = async (decision) => {
-        // ALLOWED even if locked (per request)
         let nextStage = candidate.current_stage;
-
         if (decision === 'pass') {
             const currentIndex = STAGES.indexOf(candidate.current_stage);
             if (candidate.current_stage === 'Waiting List') {
@@ -180,12 +174,11 @@ export default function CandidateDetails() {
     };
 
     const handleTrackChange = async (newTrackId) => {
-        // ALLOWED even if locked (per request)
         try {
             const token = localStorage.getItem('token');
             const response = await axios.put(`http://localhost:5000/api/candidates/${id}`, {
                 ...candidate,
-                track_id: newTrackId
+                track_id: parseInt(newTrackId) // Ensure it sends a number
             }, { headers: { Authorization: `Bearer ${token}` } });
 
             setCandidate(response.data);
@@ -230,7 +223,7 @@ export default function CandidateDetails() {
                     </div>
                 </div>
                 <div className="text-right">
-                    <span className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest shadow-lg ${candidate.current_stage === 'Rejected' ? 'bg-red-600' : 
+                    <span className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest shadow-lg ${candidate.current_stage === 'Rejected' ? 'bg-red-600' :
                         candidate.current_stage === 'Waiting List' ? 'bg-amber-500 text-black' : 'bg-blue-600'}`}>
                         {candidate.current_stage}
                     </span>
@@ -239,16 +232,16 @@ export default function CandidateDetails() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    
-                    {/* FEED SECTION - LOCKED IF BUSY */}
-                    <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl flex flex-col h-[700px]">
+
+                    {/* FEED SECTION - RESIZED TO h-[480px] */}
+                    <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl flex flex-col h-[480px]">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                 <MessageSquare size={20} className="text-blue-500" /> Evaluation Feed
                             </h2>
                             {isLockedByOther && <Lock size={16} className="text-amber-500" />}
                         </div>
-                        
+
                         {/* Feed List */}
                         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2 custom-scrollbar">
                             {evaluations.length === 0 ? (
@@ -279,10 +272,10 @@ export default function CandidateDetails() {
                                                 {evalItem.rating && (
                                                     <div className="flex gap-0.5 justify-end mb-1">
                                                         {[...Array(5)].map((_, i) => (
-                                                            <Star 
-                                                                key={i} 
-                                                                size={12} 
-                                                                className={i < evalItem.rating ? "fill-amber-400 text-amber-400" : "text-slate-700"} 
+                                                            <Star
+                                                                key={i}
+                                                                size={12}
+                                                                className={i < evalItem.rating ? "fill-amber-400 text-amber-400" : "text-slate-700"}
                                                             />
                                                         ))}
                                                     </div>
@@ -300,7 +293,7 @@ export default function CandidateDetails() {
                             )}
                         </div>
 
-                        {/* Input Area - LOCKED IF BUSY */}
+                        {/* Input Area */}
                         <form onSubmit={handlePostEvaluation} className={`bg-[#0F172A] p-4 rounded-xl border border-slate-700 ${isLockedByOther ? 'opacity-50 pointer-events-none' : ''}`}>
                             <div className="flex items-center gap-2 mb-3">
                                 <span className="text-xs font-bold text-slate-500 uppercase">Rate:</span>
@@ -312,9 +305,9 @@ export default function CandidateDetails() {
                                             onClick={() => setNewRating(star)}
                                             className="focus:outline-none transition-transform hover:scale-110"
                                         >
-                                            <Star 
-                                                size={20} 
-                                                className={star <= newRating ? "fill-amber-400 text-amber-400" : "text-slate-600 hover:text-amber-400"} 
+                                            <Star
+                                                size={20}
+                                                className={star <= newRating ? "fill-amber-400 text-amber-400" : "text-slate-600 hover:text-amber-400"}
                                             />
                                         </button>
                                     ))}
@@ -329,7 +322,7 @@ export default function CandidateDetails() {
                                     value={newFeedback}
                                     onChange={(e) => setNewFeedback(e.target.value)}
                                 />
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={!newFeedback.trim() || !canEditNotes}
                                     className="absolute right-0 bottom-0 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all disabled:opacity-0"
@@ -340,13 +333,13 @@ export default function CandidateDetails() {
                         </form>
                     </div>
 
-                    {/* DECISIONS & ADMIN NOTES - LOCKED IF BUSY */}
+                    {/* DECISIONS BLOCK */}
                     <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
                         <div className="flex justify-between items-center">
                             <h2 className="text-xl font-bold text-white">Consensus & Decisions</h2>
                             {isLockedByOther && <Lock size={16} className="text-amber-500" />}
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="text-xs text-slate-500 font-bold uppercase mb-2 block">Intermediate Decision</label>
@@ -375,32 +368,9 @@ export default function CandidateDetails() {
                             {saving ? 'Saving...' : 'Update Decisions'}
                         </button>
                     </div>
-
-                    {/* Admin Private Note - LOCKED IF BUSY */}
-                    {userLevel === 3 && (
-                        <div className="bg-blue-900/10 p-8 rounded-2xl border border-blue-500/20 space-y-4">
-                            <h2 className="text-xl font-bold text-blue-400 flex items-center gap-2">
-                                <ShieldAlert size={20} /> Presidency & RH Private Notes
-                            </h2>
-                            <textarea
-                                disabled={!canEditNotes}
-                                className="w-full h-32 bg-[#0F172A] border border-blue-500/20 rounded-xl p-4 text-blue-100 focus:ring-2 focus:ring-blue-500 outline-none resize-none disabled:opacity-50"
-                                placeholder="Confidential observations..."
-                                value={adminNotes}
-                                onChange={(e) => setAdminNotes(e.target.value)}
-                            />
-                            <button
-                                onClick={handleSaveSummary}
-                                disabled={saving || !canEditNotes}
-                                className="px-4 py-2 bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
-                            >
-                                Save Private Note
-                            </button>
-                        </div>
-                    )}
                 </div>
 
-                {/* SIDEBAR - UNLOCKED (Always editable per request) */}
+                {/* SIDEBAR */}
                 <div className="space-y-6">
                     {/* Workflow Actions */}
                     <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl">
@@ -433,7 +403,7 @@ export default function CandidateDetails() {
                         </div>
                     </div>
 
-                    {/* Information Sidebar */}
+                    {/* Information Sidebar with Fixed Track Select */}
                     <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 space-y-6">
                         <h3 className="text-lg font-bold text-white border-b border-slate-700 pb-2">Information</h3>
                         <div className="space-y-4 text-sm">
@@ -448,7 +418,7 @@ export default function CandidateDetails() {
                             <div className="pt-2">
                                 <p className="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2">Recruitment Track</p>
                                 <select
-                                    value={candidate?.track_id || ''}
+                                    value={candidate.track_id ? candidate.track_id.toString() : ""} // FIXED: Coerced to string for safe binding
                                     onChange={(e) => handleTrackChange(e.target.value)}
                                     className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                                 >
@@ -456,7 +426,7 @@ export default function CandidateDetails() {
                                         {tracks.length === 0 ? "Loading tracks..." : "Select a season"}
                                     </option>
                                     {tracks.length > 0 && tracks.map(track => (
-                                        <option key={track.id} value={track.id}>
+                                        <option key={track.id} value={track.id.toString()}>
                                             {track.name}
                                         </option>
                                     ))}
@@ -464,6 +434,29 @@ export default function CandidateDetails() {
                             </div>
                         </div>
                     </div>
+
+                    {/* MOVED: Admin Private Note (Now in Sidebar) */}
+                    {userLevel === 3 && (
+                        <div className="bg-blue-900/10 p-6 rounded-2xl border border-blue-500/20 space-y-4 shadow-xl">
+                            <h2 className="text-sm font-bold text-blue-400 flex items-center gap-2 uppercase tracking-wider">
+                                <ShieldAlert size={16} /> Presidency Notes
+                            </h2>
+                            <textarea
+                                disabled={!canEditNotes}
+                                className="w-full h-40 bg-[#0F172A] border border-blue-500/20 rounded-xl p-4 text-blue-100 focus:ring-2 focus:ring-blue-500 outline-none resize-none disabled:opacity-50 text-sm"
+                                placeholder="Confidential observations (Not visible to regular members)..."
+                                value={adminNotes}
+                                onChange={(e) => setAdminNotes(e.target.value)}
+                            />
+                            <button
+                                onClick={handleSaveSummary}
+                                disabled={saving || !canEditNotes}
+                                className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20"
+                            >
+                                Save Private Note
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
