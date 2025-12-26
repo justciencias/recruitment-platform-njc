@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ClipboardList, Users, ArrowRight } from 'lucide-react';
+import { ChartSpline, Users, ArrowRight } from 'lucide-react';
 import Toast from '../components/Toast';
 
 const STAGES = [
@@ -50,7 +50,7 @@ export default function Recruitment() {
         const response = await axios.get(`http://localhost:5000/api/candidates`, {
           params: {
             stage: selectedStage,
-            track_id: selectedTrack 
+            track_id: selectedTrack
           },
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -87,11 +87,12 @@ export default function Recruitment() {
       {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
 
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-          <ClipboardList className="text-blue-500" size={32} />
-          Recruitment Pipeline
-        </h1>
-        <p className="text-slate-400">Manage candidates progress through the active recruitment phases.</p>
+        <div className="flex items-center gap-4">
+          <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+            <ChartSpline size={32} />
+          </div>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">Recruitment Pipeline</h1>
+        </div>
       </div>
 
       {/* Track Switcher */}
@@ -136,7 +137,7 @@ export default function Recruitment() {
           </div>
         ) : (
           candidates
-            .filter(candidate => candidate.current_stage === selectedStage) 
+            .filter(candidate => candidate.current_stage === selectedStage)
             .map((candidate) => (
               <div
                 key={candidate.id}

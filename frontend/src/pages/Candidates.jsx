@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Download, Search } from 'lucide-react';
+import { Download, Search, ClipboardList } from 'lucide-react';
 import Toast from '../components/Toast';
 
 export default function Candidates() {
@@ -36,30 +36,30 @@ export default function Candidates() {
     const file = e.target.files[0];
     if (!file) return;
 
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
 
     const formData = new FormData();
-    formData.append('excelFile', file); 
+    formData.append('excelFile', file);
 
     try {
-        await axios.post('http://localhost:5000/api/candidates/import', formData, { 
-            headers: { 
-              'Content-Type': 'multipart/form-data',
-              'Authorization': `Bearer ${token}` 
-            }
-        });
-        setNotification({ message: 'Data imported successfully!', type: 'success' });
-        
-        e.target.value = null; 
-        
-        fetchCandidates();
-    } catch (error) {
-        console.error("Import Error:", error.response?.data || error.message);
-        setNotification({ message: 'Error importing file.', type: 'error' });
-    }
-};
+      await axios.post('http://localhost:5000/api/candidates/import', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      setNotification({ message: 'Data imported successfully!', type: 'success' });
 
-  const filteredCandidates = candidates.filter(c => 
+      e.target.value = null;
+
+      fetchCandidates();
+    } catch (error) {
+      console.error("Import Error:", error.response?.data || error.message);
+      setNotification({ message: 'Error importing file.', type: 'error' });
+    }
+  };
+
+  const filteredCandidates = candidates.filter(c =>
     c.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -67,19 +67,24 @@ export default function Candidates() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Candidate List</h1>
-        
+        <div className="flex items-center gap-4">
+          <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+            <ClipboardList size={32} />
+          </div>
+          <h1 className="text-3xl font-bold text-white">Candidate List</h1>
+        </div>
+
         {/* Hidden File Input */}
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          onChange={handleFileUpload} 
-          className="hidden" 
-          accept=".xlsx, .xls" 
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+          accept=".xlsx, .xls"
         />
-        
+
         {/* Import Excel Button */}
-        <button 
+        <button
           onClick={() => fileInputRef.current.click()}
           className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all font-semibold"
         >
@@ -90,7 +95,7 @@ export default function Candidates() {
 
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-        <input 
+        <input
           type="text"
           placeholder="Search by name or email..."
           className="w-full bg-[#1E293B] border border-slate-700 rounded-lg py-2 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -125,7 +130,7 @@ export default function Candidates() {
                 </td>
                 <td className="px-6 py-4 text-right">
                   {/* View Details Action */}
-                  <button 
+                  <button
                     onClick={() => navigate(`/candidates/${candidate.id}`)}
                     className="text-blue-500 hover:text-blue-400 font-semibold text-sm"
                   >

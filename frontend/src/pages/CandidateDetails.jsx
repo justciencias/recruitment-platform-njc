@@ -55,7 +55,7 @@ export default function CandidateDetails() {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             setUserLevel(user.access_level || 1);
 
-            // 1. Fetch Tracks
+            // Fetch Tracks
             try {
                 const tracksRes = await axios.get(`http://localhost:5000/api/tracks`, {
                     headers: { Authorization: `Bearer ${token}` }
@@ -63,10 +63,10 @@ export default function CandidateDetails() {
                 setTracks(tracksRes.data);
             } catch (err) { console.error("Could not load tracks", err); }
 
-            // 2. Fetch Evaluations
+            // Fetch Evaluations
             fetchEvaluations();
 
-            // 3. Fetch Candidate Details & Attempt Lock
+            // Fetch Candidate Details & Attempt Lock
             try {
                 await axios.post(`http://localhost:5000/api/candidates/${id}/lock`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
@@ -178,7 +178,7 @@ export default function CandidateDetails() {
             const token = localStorage.getItem('token');
             const response = await axios.put(`http://localhost:5000/api/candidates/${id}`, {
                 ...candidate,
-                track_id: parseInt(newTrackId) // Ensure it sends a number
+                track_id: parseInt(newTrackId) 
             }, { headers: { Authorization: `Bearer ${token}` } });
 
             setCandidate(response.data);
@@ -233,7 +233,7 @@ export default function CandidateDetails() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
 
-                    {/* FEED SECTION - RESIZED TO h-[480px] */}
+                    {/* FEED SECTION */}
                     <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl flex flex-col h-[480px]">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -418,7 +418,7 @@ export default function CandidateDetails() {
                             <div className="pt-2">
                                 <p className="text-xs text-slate-500 uppercase font-bold tracking-widest mb-2">Recruitment Track</p>
                                 <select
-                                    value={candidate.track_id ? candidate.track_id.toString() : ""} // FIXED: Coerced to string for safe binding
+                                    value={candidate.track_id ? candidate.track_id.toString() : ""} 
                                     onChange={(e) => handleTrackChange(e.target.value)}
                                     className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                                 >
@@ -435,7 +435,7 @@ export default function CandidateDetails() {
                         </div>
                     </div>
 
-                    {/* MOVED: Admin Private Note (Now in Sidebar) */}
+                    {/* Admin Private Note */}
                     {userLevel === 3 && (
                         <div className="bg-blue-900/10 p-6 rounded-2xl border border-blue-500/20 space-y-4 shadow-xl">
                             <h2 className="text-sm font-bold text-blue-400 flex items-center gap-2 uppercase tracking-wider">

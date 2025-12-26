@@ -85,8 +85,12 @@ export default function Communication() {
       )}
 
       <div className="flex items-center gap-3">
-        <Mail className="text-blue-500" size={32} />
+        <div className="flex items-center gap-4">
+          <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+            <Mail size={32} />
+          </div>
         <h1 className="text-3xl font-bold text-white">Emails</h1>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -111,7 +115,7 @@ export default function Communication() {
                 This will be sent to <span className="text-white font-bold">{count}</span> candidates currently in {selectedStage}.
               </p>
             </div>
-            {/* Individual Sending Warning - Now under Target Audience */}
+            {/* Individual Sending Warning */}
             <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3">
               <div className="text-amber-500 mt-0.5">
                 <Info size={16} />

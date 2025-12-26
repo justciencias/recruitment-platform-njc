@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { LayoutGrid } from 'lucide-react';
 
 const StatCard = ({ label, value, colorClass = "text-white" }) => (
   <div className="bg-[#1E293B] p-6 rounded-xl border border-slate-700 shadow-lg">
@@ -60,9 +61,12 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8"> 
+    <div className="space-y-8">
       {/* Header Row */}
       <div className="flex items-center gap-4">
+        <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+          <LayoutGrid size={32} />
+        </div>
         <h1 className="text-3xl font-bold text-white">Dashboard</h1>
 
         {/* Active Season Badge */}

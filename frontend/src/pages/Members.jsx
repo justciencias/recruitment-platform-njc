@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, X, Shield, Mail, Briefcase, Lock } from 'lucide-react';
+import { UserPlus, X, Users } from 'lucide-react';
 import Toast from '../components/Toast';
 import axios from 'axios';
 
@@ -80,7 +80,12 @@ export default function Members() {
             {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
 
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-white">NJC Team</h1>
+                <div className="flex items-center gap-4">
+                    <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+                        <Users size={32} />
+                    </div>
+                    <h1 className="text-3xl font-bold text-white">NJC Team</h1>
+                </div>
                 {currentUserLevel === 3 && (
                     <button
                         onClick={() => setShowModal(true)}
