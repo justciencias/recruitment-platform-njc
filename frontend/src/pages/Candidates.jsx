@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Download, Search, ClipboardList } from 'lucide-react';
+import { Download, Search, Users } from 'lucide-react';
 import Toast from '../components/Toast';
 
 export default function Candidates() {
@@ -69,7 +69,7 @@ export default function Candidates() {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
-            <ClipboardList size={32} />
+            <Users size={32} />
           </div>
           <h1 className="text-3xl font-bold text-white">Candidate List</h1>
         </div>

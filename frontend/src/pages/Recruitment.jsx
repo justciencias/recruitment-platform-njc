@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ChartSpline, Users, ArrowRight } from 'lucide-react';
+import { ClipboardList, Users, ArrowRight } from 'lucide-react';
 import Toast from '../components/Toast';
 
 const STAGES = [
@@ -89,7 +89,7 @@ export default function Recruitment() {
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-4">
           <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
-            <ChartSpline size={32} />
+            <ClipboardList size={32} />
           </div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">Recruitment Pipeline</h1>
         </div>
