@@ -12,10 +12,9 @@ const menuItems = [
 
 export default function Sidebar() {
   return (
-    // FIX: Added 'h-screen' and 'sticky top-0' to fix position
     <aside className="w-72 h-screen sticky top-0 bg-[#1E293B] text-white border-r border-slate-800 flex flex-col">
       <div className="p-8 border-b border-slate-800">
-        <h2 className="text-2xl font-bold italic">NJC <span className="font-light text-slate-400">Recruitment</span></h2>
+        <h2 className="text-3xl font-bold"> NJC Recruitment </h2>
       </div>
       
       <nav className="flex-1 p-6 space-y-2 overflow-y-auto custom-scrollbar">
