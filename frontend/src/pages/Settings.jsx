@@ -127,20 +127,22 @@ export default function Settings() {
     }, []);
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8 p-6">
+        <div className="max-w-5xl mx-auto space-y-8 p-4 lg:p-6">
             {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
 
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
-                    <SettingsIcon size={32} />
-                </div>
-                <div>
-                    <h1 className="text-3xl font-bold text-white">Settings</h1>
+            <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+                <div className="flex items-center gap-4">
+                    <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+                        <SettingsIcon size={32} />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold text-white">Settings</h1>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
                 {/* --- ADMIN ONLY SECTIONS --- */}
                 {userLevel === 3 && (
@@ -175,9 +177,9 @@ export default function Settings() {
 
                                 <div className="space-y-3">
                                     {tracks.map(track => (
-                                        <div key={track.id} className={`flex justify-between items-center p-4 bg-[#0F172A] rounded-xl border transition-all ${track.status === 'active' ? 'border-blue-500/50 shadow-lg shadow-blue-500/5' : 'border-slate-800 opacity-60'
+                                        <div key={track.id} className={`flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-[#0F172A] rounded-xl border transition-all ${track.status === 'active' ? 'border-blue-500/50 shadow-lg shadow-blue-500/5' : 'border-slate-800 opacity-60'
                                             }`}>
-                                            <div>
+                                            <div className='mb-4 sm:mb-0'>
                                                 <p className="text-white font-medium">{track.name}</p>
                                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${track.status === 'active' ? 'bg-blue-500/10 text-blue-500' : 'bg-slate-500/10 text-slate-500'
                                                     }`}>
@@ -233,14 +235,14 @@ export default function Settings() {
                 )}
 
                 {/* --- VISIBLE TO ALL: Account Security Section --- */}
-                <div className={`bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl md:col-span-2`}>
+                <div className={`bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl ${userLevel === 3 ? 'lg:col-span-2' : 'lg:col-span-1'}`}>
                     <div className="p-6 border-b border-slate-700">
                         <h3 className="text-white font-bold flex items-center gap-2">
                             <Lock size={18} className="text-blue-500" /> Account Security
                         </h3>
                     </div>
 
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Password Form (With the new eye toggles) */}
                         <form onSubmit={handleChangePassword} className="space-y-4">
                             {/* ... (Your existing Password Form inputs with show/hide logic) ... */}
@@ -265,7 +267,7 @@ export default function Settings() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {/* New Password Field */}
                                 <div>
                                     <label className="text-xs text-slate-500 uppercase font-bold tracking-widest block mb-1">New Password</label>

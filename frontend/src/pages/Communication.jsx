@@ -75,7 +75,7 @@ export default function Communication() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 px-4 lg:px-0">
       {notification && (
         <Toast
           message={notification.message}
@@ -84,7 +84,7 @@ export default function Communication() {
         />
       )}
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3">
         <div className="flex items-center gap-4">
           <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
             <Mail size={32} />
@@ -131,7 +131,7 @@ export default function Communication() {
         </div>
 
         {/* Email Editor */}
-        <div className="lg:col-span-2 bg-[#1E293B] p-8 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
+        <div className="lg:col-span-2 bg-[#1E293B] p-6 lg:p-8 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
           <input
             type="text"
             placeholder="Email Subject"

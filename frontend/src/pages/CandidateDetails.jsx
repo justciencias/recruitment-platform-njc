@@ -191,7 +191,7 @@ export default function CandidateDetails() {
     if (!candidate) return <div className="text-white p-10 italic">Loading profile...</div>;
 
     return (
-        <div className="max-w-6xl mx-auto space-y-6 pb-20">
+        <div className="max-w-6xl mx-auto space-y-6 pb-20 px-4 lg:px-0">
             {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
 
             {isLockedByOther && (
@@ -208,21 +208,21 @@ export default function CandidateDetails() {
             </button>
 
             {/* Profile Header */}
-            <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl flex items-center gap-6">
-                <div className="w-24 h-24 bg-blue-600/20 rounded-full flex items-center justify-center border-2 border-blue-500/50">
+            <div className="bg-[#1E293B] p-6 lg:p-8 rounded-2xl border border-slate-700 shadow-xl flex flex-col lg:flex-row items-center">
+                <div className="w-24 h-24 bg-blue-600/20 rounded-full flex items-center justify-center border-2 border-blue-500/50 flex-shrink-0">
                     <User size={48} className="text-blue-500" />
                 </div>
-                <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                        <h1 className="text-4xl font-bold text-white">{candidate.full_name}</h1>
+                <div className="flex-1 text-center lg:text-left">
+                    <div className="flex flex-col lg:flex-row items-center gap-3">
+                        <h1 className="text-3xl lg:text-4xl font-bold text-white">{candidate.full_name}</h1>
                         <span className="px-3 py-1 bg-slate-800 text-slate-400 rounded-md text-xs font-bold border border-slate-700 uppercase">{candidate.degree_type}</span>
                     </div>
-                    <div className="flex gap-4 mt-2 text-slate-400">
+                    <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 mt-2 text-slate-400 justify-center lg:justify-start">
                         <span className="flex items-center gap-1 text-sm"><Mail size={14} /> {candidate.email}</span>
                         <span className="flex items-center gap-1 text-sm"><Phone size={14} /> {candidate.phone || 'No phone'}</span>
                     </div>
                 </div>
-                <div className="text-right">
+                <div className="text-center lg:text-right mt-4 lg:mt-0">
                     <span className={`px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest shadow-lg ${candidate.current_stage === 'Rejected' ? 'bg-red-600' :
                         candidate.current_stage === 'Waiting List' ? 'bg-amber-500 text-black' : 'bg-blue-600'}`}>
                         {candidate.current_stage}
@@ -234,7 +234,7 @@ export default function CandidateDetails() {
                 <div className="lg:col-span-2 space-y-6">
 
                     {/* FEED SECTION */}
-                    <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl flex flex-col h-[480px]">
+                    <div className="bg-[#1E293B] p-6 lg:p-8 rounded-2xl border border-slate-700 shadow-xl flex flex-col h-auto lg:h-[480px]">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                 <MessageSquare size={20} className="text-blue-500" /> Evaluation Feed
@@ -249,14 +249,14 @@ export default function CandidateDetails() {
                             ) : (
                                 evaluations.map((evalItem) => (
                                     <div key={evalItem.id} className="bg-[#0F172A] p-4 rounded-xl border border-slate-700/50">
-                                        <div className="flex justify-between items-start mb-2">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs">
+                                                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs flex-shrink-0">
                                                     {evalItem.full_name.charAt(0)}
                                                 </div>
                                                 <div>
                                                     <p className="text-white font-bold text-sm">{evalItem.full_name}</p>
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex items-center gap-2 flex-wrap">
                                                         <p className="text-[10px] text-slate-400 uppercase tracking-wider">
                                                             {evalItem.access_level === 3 ? 'Admin' : evalItem.access_level === 2 ? 'Evaluator' : 'Member'}
                                                         </p>
@@ -268,9 +268,9 @@ export default function CandidateDetails() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
+                                            <div className="text-left sm:text-right mt-2 sm:mt-0">
                                                 {evalItem.rating && (
-                                                    <div className="flex gap-0.5 justify-end mb-1">
+                                                    <div className="flex gap-0.5 justify-start sm:justify-end mb-1">
                                                         {[...Array(5)].map((_, i) => (
                                                             <Star
                                                                 key={i}
@@ -334,13 +334,13 @@ export default function CandidateDetails() {
                     </div>
 
                     {/* DECISIONS BLOCK */}
-                    <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
+                    <div className="bg-[#1E293B] p-6 lg:p-8 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
                         <div className="flex justify-between items-center">
                             <h2 className="text-xl font-bold text-white">Consensus & Decisions</h2>
                             {isLockedByOther && <Lock size={16} className="text-amber-500" />}
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                                 <label className="text-xs text-slate-500 font-bold uppercase mb-2 block">Intermediate Decision</label>
                                 <textarea
@@ -373,7 +373,7 @@ export default function CandidateDetails() {
                 {/* SIDEBAR */}
                 <div className="space-y-6">
                     {/* Workflow Actions */}
-                    <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 shadow-xl">
+                    <div className="bg-[#1E293B] p-6 lg:p-8 rounded-2xl border border-slate-700 shadow-xl">
                         <h3 className="text-xl font-bold text-white mb-6">Workflow Action</h3>
                         <div className="space-y-3">
                             <button
@@ -404,7 +404,7 @@ export default function CandidateDetails() {
                     </div>
 
                     {/* Information Sidebar with Fixed Track Select */}
-                    <div className="bg-[#1E293B] p-8 rounded-2xl border border-slate-700 space-y-6">
+                    <div className="bg-[#1E293B] p-6 lg:p-8 rounded-2xl border border-slate-700 space-y-6">
                         <h3 className="text-lg font-bold text-white border-b border-slate-700 pb-2">Information</h3>
                         <div className="space-y-4 text-sm">
                             <div>

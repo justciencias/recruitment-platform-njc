@@ -61,13 +61,16 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 lg:px-0">
       {/* Header Row */}
-      <div className="flex items-center gap-4">
-        <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
-          <LayoutDashboard size={32} />
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+        <div className="flex items-center gap-4">
+          <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+            <LayoutDashboard size={32} />
+          </div>
+          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
         </div>
-        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+
 
         {/* Active Season Badge */}
         <div className="bg-blue-600/10 border border-blue-500/20 px-4 py-1.5 rounded-full flex items-center gap-2">

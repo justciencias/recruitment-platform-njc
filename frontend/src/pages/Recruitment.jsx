@@ -83,15 +83,17 @@ export default function Recruitment() {
   }, [selectedStage]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 lg:px-0">
       {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
 
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
-            <ClipboardList size={32} />
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
+              <ClipboardList size={32} />
+            </div>
+            <h1 className="text-3xl font-bold text-white flex items-center gap-3">Recruitment Pipeline</h1>
           </div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">Recruitment Pipeline</h1>
         </div>
       </div>
 
@@ -101,7 +103,7 @@ export default function Recruitment() {
         <select
           value={selectedTrack}
           onChange={(e) => setSelectedTrack(e.target.value)}
-          className="bg-[#1E293B] border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all min-w-[200px]"
+          className="bg-[#1E293B] border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all w-full lg:w-auto lg:min-w-[200px]"
         >
           {tracks.map(track => (
             <option key={track.id} value={track.id}>{track.name}</option>
@@ -110,12 +112,12 @@ export default function Recruitment() {
       </div>
 
       {/* Stage Selector Tabs */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-[#1E293B] rounded-2xl border border-slate-700 w-fit">
+      <div className="flex flex-wrap gap-2 p-1.5 bg-[#1E293B] rounded-2xl border border-slate-700 w-full lg:w-fit">
         {STAGES.map((stage) => (
           <button
             key={stage}
             onClick={() => setSelectedStage(stage)}
-            className={`px-6 py-2.5 rounded-xl font-semibold transition-all text-sm ${selectedStage === stage
+            className={`px-4 lg:px-6 py-2.5 rounded-xl font-semibold transition-all text-sm flex-grow lg:flex-grow-0 ${selectedStage === stage
               ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
@@ -126,7 +128,7 @@ export default function Recruitment() {
       </div>
 
       {/* Pipeline Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full py-20 text-center text-slate-500 italic">Filtering pipeline...</div>
         ) : candidates.filter(c => c.current_stage === selectedStage).length === 0 ? (

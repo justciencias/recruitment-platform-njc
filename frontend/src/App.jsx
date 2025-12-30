@@ -31,12 +31,6 @@ function App() {
           <Route path="/communication" element={<Communication />} />
           <Route path="/members" element={<Members />} />
           <Route path="/settings" element={<Settings />} />
-
-          
-          <Route path="/recruitment" element={<div className="text-white text-2xl">Recruitment Page (Coming Soon)</div>} />
-          <Route path="/communication" element={<div className="text-white text-2xl">Communication Page (Coming Soon)</div>} />
-          <Route path="/members" element={<div className="text-white text-2xl">Members Page (Coming Soon)</div>} />
-          <Route path="/settings" element={<div className="text-white text-2xl">Settings Page (Coming Soon)</div>} />
         </Routes>
       </Layout>
     </Router>

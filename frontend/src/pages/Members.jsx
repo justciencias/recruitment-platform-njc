@@ -76,10 +76,10 @@ export default function Members() {
     };
 
     return (
-        <div className="p-6 space-y-6 max-w-6xl mx-auto">
+        <div className="p-4 lg:p-6 space-y-6 max-w-6xl mx-auto">
             {notification && <Toast message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
 
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
                 <div className="flex items-center gap-4">
                     <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
                         <Users size={32} />
@@ -89,7 +89,7 @@ export default function Members() {
                 {currentUserLevel === 3 && (
                     <button
                         onClick={() => setShowModal(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20 mt-4 lg:mt-0"
                     >
                         <UserPlus size={20} /> Add Member
                     </button>
@@ -97,28 +97,27 @@ export default function Members() {
             </div>
 
             {/* Members Table */}
-            <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+            <div className="bg-[#1E293B] rounded-2xl border border-slate-700 overflow-x-auto shadow-xl">
                 <table className="w-full text-left">
                     <thead className="bg-[#0F172A] text-slate-400 text-xs uppercase font-bold tracking-widest">
                         <tr>
-                            <th className="px-6 py-4 w-1/3">Name</th>
-                            <th className="px-6 py-4 w-1/3">Department</th>
-                            <th className="px-6 py-4 w-1/4">Access Level</th>
-                            <th className="px-6 py-4 text-right"></th>
+                            <th className="px-6 py-4">Name</th>
+                            <th className="px-6 py-4 hidden sm:table-cell">Department</th>
+                            <th className="px-6 py-4 hidden lg:table-cell">Access Level</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700 text-slate-300">
                         {users.map((user) => (
                             <tr key={user.id} className="hover:bg-slate-800/30 transition-colors">
-                                <td className="px-6 py-4 font-medium text-white w-1/3">
+                                <td className="px-6 py-4 font-medium text-white">
                                     {user.full_name}
                                 </td>
 
-                                <td className="px-6 py-4 text-slate-400 w-1/3">
+                                <td className="px-6 py-4 text-slate-400 hidden sm:table-cell">
                                     {user.department}
                                 </td>
 
-                                <td className="px-6 py-4 w-1/4">
+                                <td className="px-6 py-4 hidden lg:table-cell">
                                     <span className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold border ${user.access_level === 3 ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                                         user.access_level === 2 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
                                             'bg-blue-500/10 text-blue-400 border-blue-500/20'
@@ -169,7 +168,7 @@ export default function Members() {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase">Department</label>
                                     <input

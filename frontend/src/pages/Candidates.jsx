@@ -66,7 +66,7 @@ export default function Candidates() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
         <div className="flex items-center gap-4">
           <div className="bg-blue-600/20 p-3 rounded-2xl text-blue-500">
             <Users size={32} />
@@ -86,14 +86,14 @@ export default function Candidates() {
         {/* Import Excel Button */}
         <button
           onClick={() => fileInputRef.current.click()}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all font-semibold"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all font-semibold mt-4 lg:mt-0"
         >
           <Download size={20} />
           Import Excel
         </button>
       </div>
 
-      <div className="relative max-w-md">
+      <div className="relative w-full lg:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
         <input
           type="text"
@@ -104,13 +104,13 @@ export default function Candidates() {
         />
       </div>
 
-      <div className="bg-[#1E293B] rounded-xl border border-slate-700 overflow-hidden shadow-xl">
+      <div className="bg-[#1E293B] rounded-xl border border-slate-700 overflow-x-auto shadow-xl">
         <table className="w-full text-left">
           <thead className="bg-[#0F172A] text-slate-400 text-xs uppercase tracking-widest border-b border-slate-700">
             <tr>
               <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Email</th>
-              <th className="px-6 py-4">Current Stage</th>
+              <th className="px-6 py-4 hidden lg:table-cell">Email</th>
+              <th className="px-6 py-4 hidden lg:table-cell">Current Stage</th>
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -122,8 +122,8 @@ export default function Candidates() {
             ) : filteredCandidates.map((candidate) => (
               <tr key={candidate.id} className="hover:bg-slate-800/50 transition-colors">
                 <td className="px-6 py-4 font-medium">{candidate.full_name}</td>
-                <td className="px-6 py-4 text-slate-400">{candidate.email}</td>
-                <td className="px-6 py-4 text-sm">
+                <td className="px-6 py-4 text-slate-400 hidden lg:table-cell">{candidate.email}</td>
+                <td className="px-6 py-4 text-sm hidden lg:table-cell">
                   <span className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded-full border border-blue-600/30">
                     {candidate.current_stage}
                   </span>

@@ -23,11 +23,11 @@ export default function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A192F] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0A192F] flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl overflow-hidden border-t-4 border-slate-400">
         <div className="p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#0A192F]">NJC Recruitment</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#0A192F]">NJC Recruitment</h1>
             <p className="text-slate-500 mt-2">Gestão de Candidatos</p>
           </div>
           
