@@ -2,7 +2,7 @@ const db = require('../config/db');
 const xlsx = require('xlsx');
 
 const CandidateController = {
-    // 1. List all candidates (Dashboard/List)
+    // List all candidates 
     async index(req, res) {
         const { stage, degree, sort = 'full_name', order = 'ASC' } = req.query;
         try {
@@ -30,7 +30,7 @@ const CandidateController = {
         }
     },
 
-    // 2. Create new candidate (Essential for "Add Candidate" button)
+    // Create new candidate 
     async store(req, res) {
         const { full_name, email, phone, degree_type } = req.body;
         try {
@@ -44,7 +44,7 @@ const CandidateController = {
         }
     },
 
-    // 3. Get single candidate details (with Privacy Logic)
+    // Get single candidate details 
     async show(req, res) {
         const { id } = req.params;
         const userLevel = req.user.access_level;
@@ -64,7 +64,7 @@ const CandidateController = {
         }
     },
 
-    // 4. Update candidate
+    // Update candidate
     async update(req, res) {
         const { id } = req.params;
         const userLevel = req.user.access_level;
@@ -101,7 +101,7 @@ const CandidateController = {
         }
     },
 
-    // 5. Delete candidate
+    // Delete candidate
     async delete(req, res) {
         const { id } = req.params;
         try {
@@ -112,7 +112,7 @@ const CandidateController = {
         }
     },
 
-    // 6. Lock Profile Logic
+    // Lock Profile Logic
     async lock(req, res) {
         const { id } = req.params;
         const userId = req.user.id;
@@ -139,7 +139,7 @@ const CandidateController = {
         }
     },
 
-    // 7. Get Stats (Dashboard)
+    // Get Stats (Dashboard)
     async getStats(req, res) {
         try {
             const query = `
@@ -161,7 +161,7 @@ const CandidateController = {
         }
     },
 
-    // 8. Import Excel
+    // Import Excel
     async importExcel(req, res) {
         try {
             if (!req.files || !req.files.excelFile) return res.status(400).json({ error: 'No file uploaded' });
@@ -186,7 +186,7 @@ const CandidateController = {
         }
     },
 
-    // 9. Get Evaluation Feed
+    // Get Evaluation Feed
     async getEvaluations(req, res) {
         const { id } = req.params;
         try {
@@ -204,7 +204,7 @@ const CandidateController = {
         }
     },
 
-    // 10. Add New Evaluation
+    // Add New Evaluation
     async addEvaluation(req, res) {
         const { id } = req.params;
         const { feedback, rating, stage_evaluated } = req.body;
@@ -229,7 +229,21 @@ const CandidateController = {
             console.error(error);
             res.status(500).json({ error: "Failed to post evaluation" });
         }
+    },
+
+    // Bulk Delete Candidates
+    async bulkDelete(req, res) {
+    const { ids } = req.body; // Expecting an array [1, 2, 3]
+    if (!ids || ids.length === 0) return res.status(400).json({ error: 'No IDs provided' });
+
+    try {
+        await db.query('DELETE FROM candidates WHERE id = ANY($1)', [ids]);
+        res.json({ message: `${ids.length} candidates deleted successfully` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete candidates' });
     }
+}
 };
 
 module.exports = CandidateController;

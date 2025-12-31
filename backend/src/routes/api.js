@@ -45,6 +45,7 @@ router.delete('/users/:id', authorize(3), UserController.delete);
 router.post('/candidates/:id/lock', authorize(1), CandidateController.lock); 
 router.get('/candidates/:id', authorize(1), CandidateController.show);
 router.post('/candidates', authorize(3), CandidateController.store);
+router.post('/candidates/bulk-delete', authorize(3), CandidateController.bulkDelete);
 
 router.put('/candidates/:id', authorize(1), CandidateController.update);
 
