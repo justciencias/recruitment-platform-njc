@@ -35,8 +35,8 @@ const CandidateController = {
         const { full_name, email, phone, degree_type } = req.body;
         try {
             const result = await db.query(
-                'INSERT INTO candidates (full_name, email, phone, degree_type) VALUES ($1, $2, $3, $4) RETURNING *',
-                [full_name, email, phone, degree_type]
+                'INSERT INTO candidates (full_name, email, phone, degree_type, track_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+                [full_name, email, phone, degree_type, req.body.track_id]
             );
             res.status(201).json(result.rows[0]);
         } catch (error) {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const authorize = require('../middlewares/auth'); // User's custom middleware
+const authorize = require('../middlewares/auth');
+const pool = require('../config/db');
 
 const CandidateController = require('../controllers/CandidateController');
 const EmailController = require('../controllers/EmailController');
@@ -25,7 +26,6 @@ router.post('/emails/sendBulk', authorize(2), EmailController.sendBulk);
  * Level 3: Admin (Can edit candidate personal details)
  */
 
-// === FIX 1: Add authorize(1) here so req.user exists ===
 router.get('/candidates/:id/evaluations', authorize(1), CandidateController.getEvaluations);
 router.post('/candidates/:id/evaluations', authorize(1), CandidateController.addEvaluation);
 
@@ -44,10 +44,8 @@ router.delete('/users/:id', authorize(3), UserController.delete);
 
 router.post('/candidates/:id/lock', authorize(1), CandidateController.lock); 
 router.get('/candidates/:id', authorize(1), CandidateController.show);
+router.post('/candidates', authorize(3), CandidateController.store);
 
-// === FIX 2: Changed to authorize(1) ===
-// We lowered this from (3) to (1) because Evaluators need to Update decisions.
-// The Controller logic we wrote earlier already protects the Admin-only fields.
 router.put('/candidates/:id', authorize(1), CandidateController.update);
 
 // Tracks Management
